@@ -21,10 +21,12 @@ $show_cat_tag     = get_theme_mod( 'eghtesadran_hero_show_cat_tag', '1' ) === '1
 $left_title       = get_theme_mod( 'eghtesadran_hero_left_title', __( 'مهم ترین اخبار', 'eghtesadran' ) );
 $left_icon        = get_theme_mod( 'eghtesadran_hero_left_icon', 'trending-up' );
 
-// Main Hero Query (1 post)
+// Main Hero Query (1 post) - Fetch the latest post
 $main_args = array(
 	'post_type'      => 'post',
 	'posts_per_page' => 1,
+	'orderby'        => 'date',
+	'order'          => 'DESC',
 );
 if ( $right_cat > 0 ) {
 	$main_args['cat'] = $right_cat;
@@ -33,22 +35,7 @@ if ( $right_offset > 0 ) {
 	$main_args['offset'] = $right_offset;
 }
 
-$hero_main_args = array_merge( $main_args, array(
-	'meta_query'     => array(
-		array(
-			'key'     => '_eghtesadran_badge',
-			'value'   => 'featured',
-			'compare' => '=',
-		),
-	),
-) );
-
-$hero_main_query = new WP_Query( $hero_main_args );
-
-// Fallback if no featured post
-if ( ! $hero_main_query->have_posts() ) {
-	$hero_main_query = new WP_Query( $main_args );
-}
+$hero_main_query = new WP_Query( $main_args );
 
 // Side News Query (excluding the main one)
 $exclude_id = 0;
@@ -60,6 +47,8 @@ $side_args = array(
 	'post_type'      => 'post',
 	'posts_per_page' => $left_count,
 	'post__not_in'   => array( $exclude_id ),
+	'orderby'        => 'date',
+	'order'          => 'DESC',
 );
 if ( $left_cat > 0 ) {
 	$side_args['cat'] = $left_cat;
@@ -68,18 +57,7 @@ if ( $left_offset > 0 ) {
 	$side_args['offset'] = $left_offset;
 }
 
-$hero_side_args = array_merge( $side_args, array(
-	'meta_key'       => '_eghtesadran_badge',
-	'orderby'        => 'meta_value',
-	'order'          => 'DESC',
-) );
-
-$hero_side_query = new WP_Query( $hero_side_args );
-
-// Fallback if side query has no posts
-if ( ! $hero_side_query->have_posts() ) {
-	$hero_side_query = new WP_Query( $side_args );
-}
+$hero_side_query = new WP_Query( $side_args );
 ?>
 
 <!-- 2. HERO SECTION -->
