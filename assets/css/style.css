@@ -1,0 +1,187 @@
+/* ==========================================================================
+   Eghtesadran Custom Stylesheet
+   ========================================================================== */
+
+/* 1. Font Definitions & Variables */
+@font-face {
+    font-family: 'IRANYekanX';
+    src: url('../fonts/IRANYekanXVF.woff2') format('woff2'),
+         url('../fonts/IRANYekanXVF.woff') format('woff');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --font-primary: 'IRANYekanX', 'Vazirmatn', system-ui, -apple-system, sans-serif;
+    --primary-color: #dc2626; /* Red-600 */
+    --primary-hover: #b91c1c; /* Red-700 */
+    --bg-light: #f4f5f7;      /* Light gray-blue background */
+}
+
+/* 2. Global Resets & Styling overrides */
+body {
+    font-family: var(--font-primary) !important;
+}
+
+/* Custom Scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f4f5f7;
+    border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Hide scrollbar utility class */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* 3. Navigation Dividers (Exactly 1/3 Height, vertically centered) */
+.nav-divider {
+    position: relative;
+}
+
+.nav-divider::after {
+    content: '';
+    position: absolute;
+    top: 33.33%; /* Center vertically */
+    right: 0;
+    height: 33.33%; /* Exactly 1/3 of navigation container height */
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.2); /* Soft semi-transparent white */
+    pointer-events: none;
+}
+
+.nav-divider-sticky {
+    position: relative;
+}
+
+.nav-divider-sticky::after {
+    content: '';
+    position: absolute;
+    top: 33.33%; /* Center vertically */
+    right: 0;
+    height: 33.33%; /* Exactly 1/3 of sticky navigation height */
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.3); /* Slightly brighter for contrast */
+    pointer-events: none;
+}
+
+/* Dark mode overrides for dividers */
+.dark .nav-divider-sticky::after {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* 4. CSS-Only Marquee News Ticker (RTL support) */
+.ticker-wrap {
+    overflow: hidden;
+    width: 100%;
+}
+
+.ticker-content {
+    display: flex;
+    width: max-content;
+    animation: ticker-marquee 35s linear infinite;
+}
+
+.ticker-content:hover {
+    animation-play-state: paused;
+}
+
+@keyframes ticker-marquee {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        transform: translate3d(50%, 0, 0); /* RTL marquee slides right to left, moving by positive percentage if parent dir is RTL */
+    }
+}
+
+/* Alternative animation if dir is reset or for different layouts */
+@keyframes ticker-marquee-left {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+/* 5. Custom styles for modern, premium look */
+.glow-effect {
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.08);
+    transition: all 0.3s ease;
+}
+
+.glow-effect:hover {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.15);
+}
+
+/* Shimmer loading effect placeholder */
+.shimmer {
+    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+    background-size: 200% 100%;
+    animation: loading-shimmer 1.5s infinite;
+}
+
+.dark .shimmer {
+    background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+    background-size: 200% 100%;
+}
+
+@keyframes loading-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* 6. Print Styles */
+@media print {
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .single-content-grid {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .article-container {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .article-content {
+        font-size: 14pt !important;
+        line-height: 2 !important;
+    }
+
+    .print-logo {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .print-logo img {
+        height: 60px;
+        margin: 0 auto;
+    }
+}

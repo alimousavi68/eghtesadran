@@ -1,0 +1,76 @@
+.ns-metabox-wrapper {
+    padding: 10px;
+}
+
+.ns-field-row {
+    margin-bottom: 15px;
+}
+
+.ns-field-row label {
+    display: inline-block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.ns-field-row .widefat {
+    max-width: 100%;
+}
+
+.ns-field-row .ltr-input {
+    direction: ltr;
+    text-align: left;
+}
+
+.ns-conditional-section {
+    display: none; /* Hidden by default, JS handles visibility */
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.ns-sub-conditional {
+    display: none;
+    margin-top: 10px;
+    padding-left: 15px;
+    border-left: 3px solid #007cba;
+}
+
+.flex-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.ns-gallery-item {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.ns-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.ns-gallery-item .remove-image {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 16px;
+    cursor: pointer;
+    font-size: 12px;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "eghtesadran-theme",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Build tooling for the Eghtesadran WordPress theme.",
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/css/tailwind.css -o ./assets/build/theme.css --minify",
+    "watch:css": "tailwindcss -i ./assets/css/tailwind.css -o ./assets/build/theme.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
