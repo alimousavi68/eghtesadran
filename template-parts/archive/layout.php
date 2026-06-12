@@ -40,13 +40,14 @@
             </div>
 
             <!-- Pagination -->
-            <div class="mt-8">
+            <div class="mt-8 print:hidden">
                 <?php
                 the_posts_pagination(
                     array(
                         'prev_text' => '<i data-lucide="chevron-right" class="w-5 h-5"></i>',
                         'next_text' => '<i data-lucide="chevron-left" class="w-5 h-5"></i>',
-                        'class'     => 'pagination flex items-center justify-center gap-2 print:hidden mb-8',
+                        'class'     => 'eghtesadran-pagination',
+                        'mid_size'  => 2,
                     )
                 );
                 ?>

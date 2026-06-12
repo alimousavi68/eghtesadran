@@ -187,101 +187,100 @@ body {
 }
 
 /* 7. Pagination */
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    padding: 16px 0 32px;
+
+/* WordPress outputs: <nav class="navigation pagination eghtesadran-pagination"> */
+nav.eghtesadran-pagination {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    padding: 20px 0 32px !important;
     direction: rtl;
 }
 
-.pagination .nav-links {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
+nav.eghtesadran-pagination .nav-links {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
 }
 
-.pagination .page-numbers {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 38px;
-    height: 38px;
-    padding: 0 10px;
+nav.eghtesadran-pagination .page-numbers {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
     border-radius: 10px;
     font-size: 13px;
     font-weight: 700;
-    text-decoration: none;
+    text-decoration: none !important;
     border: 1.5px solid #e2e8f0;
     background-color: #ffffff;
-    color: #475569;
+    color: #475569 !important;
     transition: all 0.2s ease;
     line-height: 1;
+    font-family: var(--font-primary);
 }
 
-.dark .pagination .page-numbers {
+.dark nav.eghtesadran-pagination .page-numbers {
     background-color: #1e293b;
     border-color: #334155;
-    color: #94a3b8;
+    color: #94a3b8 !important;
 }
 
-.pagination .page-numbers:hover {
-    background-color: #dc2626;
-    border-color: #dc2626;
-    color: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+nav.eghtesadran-pagination .page-numbers:hover {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.28);
 }
 
-.pagination .page-numbers.current {
-    background-color: #dc2626;
-    border-color: #dc2626;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+nav.eghtesadran-pagination .page-numbers.current {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
     cursor: default;
     pointer-events: none;
 }
 
-.pagination .page-numbers.dots {
-    border-color: transparent;
-    background-color: transparent;
-    color: #94a3b8;
+nav.eghtesadran-pagination .page-numbers.dots {
+    border-color: transparent !important;
+    background-color: transparent !important;
+    color: #94a3b8 !important;
     pointer-events: none;
-    min-width: 28px;
+    box-shadow: none !important;
+    min-width: 24px;
 }
 
-.pagination .prev.page-numbers,
-.pagination .next.page-numbers {
-    min-width: 42px;
-    height: 38px;
+nav.eghtesadran-pagination .prev.page-numbers,
+nav.eghtesadran-pagination .next.page-numbers {
+    min-width: 44px;
+    height: 40px;
     border-radius: 10px;
-    background-color: #f8fafc;
-    border-color: #e2e8f0;
-    color: #64748b;
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #64748b !important;
+    padding: 0 10px;
 }
 
-.dark .pagination .prev.page-numbers,
-.dark .pagination .next.page-numbers {
-    background-color: #0f172a;
-    border-color: #334155;
-    color: #64748b;
+.dark nav.eghtesadran-pagination .prev.page-numbers,
+.dark nav.eghtesadran-pagination .next.page-numbers {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #64748b !important;
 }
 
-.pagination .prev.page-numbers:hover,
-.pagination .next.page-numbers:hover {
-    background-color: #dc2626;
-    border-color: #dc2626;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-}
-
-.pagination .prev.page-numbers svg,
-.pagination .next.page-numbers svg {
-    width: 16px;
-    height: 16px;
+nav.eghtesadran-pagination .prev.page-numbers:hover,
+nav.eghtesadran-pagination .next.page-numbers:hover {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.28);
 }
 
