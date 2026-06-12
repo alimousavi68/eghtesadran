@@ -23,13 +23,20 @@
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-5 md:p-8 mb-8 article-container relative' ); ?>>
 
 			<!-- Print Logo -->
-			<div class="hidden print:block print-logo text-center mb-8">
+			<div class="hidden print:block print-logo text-right mb-8">
 				<?php
 				if ( has_custom_logo() ) {
-					the_custom_logo();
+					// Wrap the_custom_logo() output to control sizing in print
+					$custom_logo_id = get_theme_mod( 'custom_logo' );
+					$logo_url       = wp_get_attachment_image_url( $custom_logo_id, 'full' );
+					if ( $logo_url ) {
+						echo '<img src="' . esc_url( $logo_url ) . '" alt="' . esc_attr( get_bloginfo( 'name' ) ) . '" style="height:3rem;width:auto;display:inline-block;">';
+					} else {
+						the_custom_logo();
+					}
 				} else {
 					?>
-					<img src="<?php echo esc_url( eghtesadran_asset_uri( 'assets/images/logo.webp' ) ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="h-16 mx-auto">
+					<img src="<?php echo esc_url( eghtesadran_asset_uri( 'assets/images/logo.webp' ) ); ?>" alt="<?php bloginfo( 'name' ); ?>" style="height:3rem;width:auto;display:inline-block;">
 					<?php
 				}
 				?>

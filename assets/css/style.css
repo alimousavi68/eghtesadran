@@ -176,12 +176,112 @@ body {
 
     .print-logo {
         display: block !important;
-        text-align: center;
+        text-align: right;
         margin-bottom: 30px;
     }
 
     .print-logo img {
-        height: 60px;
-        margin: 0 auto;
+        height: 48px;
+        width: auto;
     }
 }
+
+/* 7. Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 16px 0 32px;
+    direction: rtl;
+}
+
+.pagination .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pagination .page-numbers {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1.5px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #475569;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.dark .pagination .page-numbers {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #94a3b8;
+}
+
+.pagination .page-numbers:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+.pagination .page-numbers.current {
+    background-color: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    cursor: default;
+    pointer-events: none;
+}
+
+.pagination .page-numbers.dots {
+    border-color: transparent;
+    background-color: transparent;
+    color: #94a3b8;
+    pointer-events: none;
+    min-width: 28px;
+}
+
+.pagination .prev.page-numbers,
+.pagination .next.page-numbers {
+    min-width: 42px;
+    height: 38px;
+    border-radius: 10px;
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #64748b;
+}
+
+.dark .pagination .prev.page-numbers,
+.dark .pagination .next.page-numbers {
+    background-color: #0f172a;
+    border-color: #334155;
+    color: #64748b;
+}
+
+.pagination .prev.page-numbers:hover,
+.pagination .next.page-numbers:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+.pagination .prev.page-numbers svg,
+.pagination .next.page-numbers svg {
+    width: 16px;
+    height: 16px;
+}
+
