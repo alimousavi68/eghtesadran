@@ -115,8 +115,9 @@ class Eghtesadran_News_Meta_Box {
 		$gallery_images    = get_post_meta( $post->ID, '_news_gallery_images', true );
 
 		// General Fields
-		$source_name = get_post_meta( $post->ID, '_news_source_name', true );
-		$source_link = get_post_meta( $post->ID, '_news_source_link', true );
+		$primary_category = get_post_meta( $post->ID, '_news_primary_category', true );
+		$source_name      = get_post_meta( $post->ID, '_news_source_name', true );
+		$source_link      = get_post_meta( $post->ID, '_news_source_link', true );
 
 		$badges = array(
 			''         => __( 'بدون نشان', 'eghtesadran' ),
@@ -279,6 +280,18 @@ class Eghtesadran_News_Meta_Box {
 			<!-- General Source Fields -->
 			<div class="ns-general-section">
 				<div class="ns-field-row">
+					<label for="ns_primary_category"><strong><?php esc_html_e( 'دسته‌بندی اصلی:', 'eghtesadran' ); ?></strong></label>
+					<select name="_news_primary_category" id="ns_primary_category" class="widefat">
+						<option value=""><?php esc_html_e( '— انتخاب دسته بندی اصلی (اختیاری) —', 'eghtesadran' ); ?></option>
+						<?php
+						$categories = get_categories( array( 'hide_empty' => false ) );
+						foreach ( $categories as $cat ) :
+							?>
+							<option value="<?php echo esc_attr( $cat->term_id ); ?>" <?php selected( $primary_category, $cat->term_id ); ?>><?php echo esc_html( $cat->name ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+				<div class="ns-field-row">
 					<label for="ns_source_name"><strong><?php esc_html_e( 'نام منبع:', 'eghtesadran' ); ?></strong></label>
 					<input type="text" name="_news_source_name" id="ns_source_name" value="<?php echo esc_attr( $source_name ); ?>" class="widefat" maxlength="200">
 				</div>
@@ -402,6 +415,9 @@ class Eghtesadran_News_Meta_Box {
 		}
 
 		// General Source Fields
+		if ( isset( $_POST['_news_primary_category'] ) ) {
+			update_post_meta( $post_id, '_news_primary_category', absint( $_POST['_news_primary_category'] ) );
+		}
 		if ( isset( $_POST['_news_source_name'] ) ) {
 			update_post_meta( $post_id, '_news_source_name', sanitize_text_field( $_POST['_news_source_name'] ) );
 		}

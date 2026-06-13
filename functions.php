@@ -18,4 +18,6 @@ require_once get_theme_file_path( '/inc/meta-boxes.php' );
 require_once get_theme_file_path( '/inc/security.php' );
 require_once get_theme_file_path( '/inc/customizer.php' );
 require_once get_theme_file_path( '/inc/enqueue.php' );
-require_once get_theme_file_path( '/inc/security.php' );
+require_once get_theme_file_path( '/inc/static-post-content.php' );
+require_once get_theme_file_path( '/inc/contact-inbox.php' );
+

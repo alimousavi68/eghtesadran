@@ -79,10 +79,10 @@ $hero_side_query = new WP_Query( $side_args );
 						<?php if ( $show_cat_tag || $show_date ) : ?>
 							<div class="flex items-center gap-3 mb-3">
 								<?php
-								$categories = get_the_category();
-								if ( $show_cat_tag && ! empty( $categories ) ) :
+								$primary_cat = eghtesadran_get_primary_category();
+								if ( $show_cat_tag && $primary_cat ) :
 									?>
-									<span class="text-white font-extrabold text-xs bg-primary px-3 py-1 rounded-full"><?php echo esc_html( $categories[0]->name ); ?></span>
+									<span class="text-white font-extrabold text-xs bg-primary px-3 py-1 rounded-full"><?php echo esc_html( $primary_cat->name ); ?></span>
 								<?php endif; ?>
 								<?php if ( $show_date ) : ?>
 									<span class="text-slate-400 dark:text-slate-500 text-xs flex items-center">
@@ -137,10 +137,10 @@ $hero_side_query = new WP_Query( $side_args );
 							<?php if ( $show_cat_tag || $show_date ) : ?>
 								<div class="flex items-center justify-between gap-2 mb-1.5 w-full">
 									<?php
-									$categories = get_the_category();
-									if ( $show_cat_tag && ! empty( $categories ) ) :
+									$primary_cat = eghtesadran_get_primary_category();
+									if ( $show_cat_tag && $primary_cat ) :
 										?>
-										<span class="text-primary text-[10px] font-black"><?php echo esc_html( $categories[0]->name ); ?></span>
+										<span class="text-primary text-[10px] font-black"><?php echo esc_html( $primary_cat->name ); ?></span>
 									<?php endif; ?>
 									<?php if ( $show_date ) : ?>
 										<span class="text-slate-400 dark:text-slate-500 text-[10px] shrink-0 <?php echo ! $show_cat_tag ? 'mr-auto' : ''; ?>">

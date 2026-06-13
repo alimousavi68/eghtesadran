@@ -245,25 +245,96 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyShortlinkBtn = document.getElementById('copy-shortlink-btn');
     const shortlinkInput = document.getElementById('shortlink-input');
 
+    function showToast(message) {
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'fixed bottom-5 left-5 z-[99999] flex flex-col gap-2 pointer-events-none';
+            document.body.appendChild(toastContainer);
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = 'flex items-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl p-4 min-w-[280px] max-w-sm pointer-events-auto transform translate-y-10 opacity-0 transition-all duration-300 ease-out';
+        toast.style.direction = 'rtl';
+        
+        toast.innerHTML = `
+            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/40 shrink-0 text-emerald-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle-2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <div class="flex-1 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                ${message}
+            </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Trigger transition
+        requestAnimationFrame(() => {
+            toast.classList.remove('translate-y-10', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+        });
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 3000);
+    }
+
     if (copyShortlinkBtn && shortlinkInput) {
         copyShortlinkBtn.addEventListener('click', () => {
-            // Select and copy
-            shortlinkInput.select();
-            shortlinkInput.setSelectionRange(0, 99999); // For mobile devices
-            navigator.clipboard.writeText(shortlinkInput.value).then(() => {
-                // Show temporary success state
-                const originalHTML = copyShortlinkBtn.innerHTML;
-                copyShortlinkBtn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-green-500"></i>';
-                lucide.createIcons();
-                
-                // Show a toast message if needed, or just let the check icon be the message
-                setTimeout(() => {
-                    copyShortlinkBtn.innerHTML = originalHTML;
-                    lucide.createIcons();
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
+            const textToCopy = shortlinkInput.value;
+
+            const performCopy = () => {
+                // Try modern Clipboard API first
+                if (navigator.clipboard && window.isSecureContext) {
+                    return navigator.clipboard.writeText(textToCopy);
+                } else {
+                    // Fallback to select & document.execCommand
+                    return new Promise((resolve, reject) => {
+                        try {
+                            shortlinkInput.select();
+                            shortlinkInput.setSelectionRange(0, 99999); // For mobile devices
+                            const successful = document.execCommand('copy');
+                            if (successful) {
+                                resolve();
+                            } else {
+                                reject(new Error('Fallback copy failed'));
+                            }
+                        } catch (err) {
+                            reject(err);
+                        }
+                    });
+                }
+            };
+
+            performCopy()
+                .then(() => {
+                    // Show temporary checkmark inside button
+                    const originalHTML = copyShortlinkBtn.innerHTML;
+                    copyShortlinkBtn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-green-500"></i>';
+                    if (window.lucide) {
+                        window.lucide.createIcons();
+                    }
+                    
+                    // Show premium toast
+                    showToast('لینک کوتاه با موفقیت کپی شد.');
+                    
+                    setTimeout(() => {
+                        copyShortlinkBtn.innerHTML = originalHTML;
+                        if (window.lucide) {
+                            window.lucide.createIcons();
+                        }
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showToast('خطا در کپی کردن لینک.');
+                });
         });
     }
 

@@ -6,7 +6,7 @@
 @font-face {
     font-family: 'IRANYekanX';
     src: url('../fonts/IRANYekanXVF.woff2') format('woff2'),
-         url('../fonts/IRANYekanXVF.woff') format('woff');
+        url('../fonts/IRANYekanXVF.woff') format('woff');
     font-weight: 100 900;
     font-style: normal;
     font-display: swap;
@@ -14,9 +14,12 @@
 
 :root {
     --font-primary: 'IRANYekanX', 'Vazirmatn', system-ui, -apple-system, sans-serif;
-    --primary-color: #dc2626; /* Red-600 */
-    --primary-hover: #b91c1c; /* Red-700 */
-    --bg-light: #f4f5f7;      /* Light gray-blue background */
+    --primary-color: #dc2626;
+    /* Red-600 */
+    --primary-hover: #b91c1c;
+    /* Red-700 */
+    --bg-light: #f4f5f7;
+    /* Light gray-blue background */
 }
 
 /* 2. Global Resets & Styling overrides */
@@ -48,6 +51,7 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
+
 .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -61,11 +65,14 @@ body {
 .nav-divider::after {
     content: '';
     position: absolute;
-    top: 33.33%; /* Center vertically */
+    top: 33.33%;
+    /* Center vertically */
     right: 0;
-    height: 33.33%; /* Exactly 1/3 of navigation container height */
+    height: 33.33%;
+    /* Exactly 1/3 of navigation container height */
     width: 1px;
-    background-color: rgba(255, 255, 255, 0.2); /* Soft semi-transparent white */
+    background-color: rgba(255, 255, 255, 0.2);
+    /* Soft semi-transparent white */
     pointer-events: none;
 }
 
@@ -76,11 +83,14 @@ body {
 .nav-divider-sticky::after {
     content: '';
     position: absolute;
-    top: 33.33%; /* Center vertically */
+    top: 33.33%;
+    /* Center vertically */
     right: 0;
-    height: 33.33%; /* Exactly 1/3 of sticky navigation height */
+    height: 33.33%;
+    /* Exactly 1/3 of sticky navigation height */
     width: 1px;
-    background-color: rgba(255, 255, 255, 0.3); /* Slightly brighter for contrast */
+    background-color: rgba(255, 255, 255, 0.3);
+    /* Slightly brighter for contrast */
     pointer-events: none;
 }
 
@@ -109,8 +119,10 @@ body {
     0% {
         transform: translate3d(0, 0, 0);
     }
+
     100% {
-        transform: translate3d(50%, 0, 0); /* RTL marquee slides right to left, moving by positive percentage if parent dir is RTL */
+        transform: translate3d(50%, 0, 0);
+        /* RTL marquee slides right to left, moving by positive percentage if parent dir is RTL */
     }
 }
 
@@ -119,6 +131,7 @@ body {
     0% {
         transform: translate3d(0, 0, 0);
     }
+
     100% {
         transform: translate3d(-50%, 0, 0);
     }
@@ -147,8 +160,13 @@ body {
 }
 
 @keyframes loading-shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 /* 6. Print Styles */
@@ -157,7 +175,7 @@ body {
         background-color: white !important;
         color: black !important;
     }
-    
+
     .single-content-grid {
         display: block !important;
         width: 100% !important;
@@ -284,3 +302,280 @@ nav.eghtesadran-pagination .next.page-numbers:hover {
     box-shadow: 0 6px 16px rgba(220, 38, 38, 0.28);
 }
 
+/* 8. Article Content Typography (Fixing resets from Tailwind Preflight) */
+.article-content p {
+    margin-bottom: 1.5rem;
+    line-height: 1.9;
+}
+
+.article-content strong,
+.article-content b {
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.dark .article-content strong,
+.dark .article-content b {
+    color: #f8fafc;
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+    font-weight: 900;
+    line-height: 1.6;
+    color: #0f172a;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.dark .article-content h1,
+.dark .article-content h2,
+.dark .article-content h3,
+.dark .article-content h4,
+.dark .article-content h5,
+.dark .article-content h6 {
+    color: #ffffff;
+}
+
+.article-content h1 {
+    font-size: 1.875rem;
+}
+
+.article-content h2 {
+    font-size: 1.5rem;
+}
+
+.article-content h3 {
+    font-size: 1.25rem;
+}
+
+.article-content h4 {
+    font-size: 1.125rem;
+}
+
+.article-content h5 {
+    font-size: 1rem;
+}
+
+.article-content h6 {
+    font-size: 0.875rem;
+}
+
+.article-content ul,
+.article-content ol {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    padding-right: 2rem;
+    padding-left: 0;
+}
+
+.article-content ul {
+    list-style-type: disc;
+}
+
+.article-content ol {
+    list-style-type: decimal;
+}
+
+.article-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.8;
+}
+
+.article-content a {
+    color: #dc2626;
+    text-decoration: underline;
+    font-weight: 700;
+    transition: color 0.2s ease;
+}
+
+.article-content a:hover {
+    color: #b91c1c;
+    text-decoration: none;
+}
+
+.article-content blockquote {
+    margin: 2rem 0;
+    padding: 1rem 1.5rem;
+    border-right: 4px solid #dc2626;
+    border-left: 0;
+    background-color: #f8fafc;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: #475569;
+}
+
+.dark .article-content blockquote {
+    background-color: #1e293b;
+    color: #cbd5e1;
+}
+
+.article-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.875rem;
+    text-align: right;
+}
+
+.article-content th,
+.article-content td {
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+}
+
+.dark .article-content th,
+.dark .article-content td {
+    border-color: #334155;
+}
+
+.article-content th {
+    background-color: #f1f5f9;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.dark .article-content th {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+.article-content tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.dark .article-content tr:nth-child(even) {
+    background-color: #0f172a;
+}
+
+.article-content hr {
+    margin: 2.5rem 0;
+    border: 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.dark .article-content hr {
+    border-color: #334155;
+}
+
+.article-content pre,
+.article-content code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    direction: ltr;
+    text-align: left;
+}
+
+.article-content code {
+    background-color: #f1f5f9;
+    color: #dc2626;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.dark .article-content code {
+    background-color: #1e293b;
+}
+
+.article-content pre {
+    display: block;
+    background-color: #f1f5f9;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+.dark .article-content pre {
+    background-color: #1e293b;
+}
+
+.article-content pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+}
+
+/* 9. Inline Post Content Image Sizing & Container System */
+.article-content figure,
+.article-content .wp-block-image {
+    margin: 2rem auto !important;
+    padding: 1rem !important;
+    /* Fixed padding around image */
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    max-width: 100% !important;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark .article-content figure,
+.dark .article-content .wp-block-image {
+    background-color: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+.article-content figure:hover,
+.article-content .wp-block-image:hover {
+    border-color: var(--primary-color, #dc2626);
+    box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.1), 0 4px 6px -2px rgba(220, 38, 38, 0.05);
+}
+
+/* Standalone image fallback if not wrapped in figure */
+.article-content>img,
+.article-content p>img {
+    margin: 2rem auto !important;
+    padding: 1rem !important;
+    /* Fixed padding around image */
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark .article-content>img,
+.dark .article-content p>img {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+
+/* Forcibly apply standard constraints to images inside the post content */
+.article-content img {
+    max-width: 100% !important;
+    max-height: 480px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Uniform image caption styling */
+.article-content figure figcaption {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.dark .article-content figure figcaption {
+    color: #94a3b8;
+}

@@ -573,53 +573,53 @@ function eghtesadran_comment_callback( $comment, $args, $depth ) {
 	$GLOBALS['comment'] = $comment;
 	$is_reply = $depth > 1;
 	?>
-	<div <?php comment_class( $is_reply ? 'flex gap-4 pr-8 md:pr-14' : 'flex gap-4' ); ?> id="comment-<?php comment_ID(); ?>">
-		<div class="shrink-0 <?php echo $is_reply ? 'w-8 h-8 md:w-10 md:h-10' : 'w-10 h-10 md:w-12 md:h-12'; ?> bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-500 font-bold text-lg overflow-hidden">
-			<?php echo get_avatar( $comment, $is_reply ? 40 : 48 ); ?>
-		</div>
-		<div class="flex-1 <?php echo $is_reply ? 'bg-white dark:bg-slate-800 border border-primary/20 p-4 rounded-2xl rounded-tr-none relative' : 'bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 p-4 md:p-5 rounded-2xl rounded-tr-none'; ?>">
+	<div <?php comment_class( $is_reply ? 'pr-8 md:pr-14 mt-6' : 'mt-6' ); ?> id="comment-<?php comment_ID(); ?>">
+		<div class="flex gap-4 relative">
 			<?php if ( $is_reply ) : ?>
 				<!-- Indicator line for reply -->
 				<div class="absolute -right-6 md:-right-10 top-0 w-6 md:w-10 h-6 border-r-2 border-b-2 border-slate-200 dark:border-slate-700 rounded-br-xl"></div>
 			<?php endif; ?>
-
-			<div class="flex items-center justify-between mb-2">
-				<div class="font-bold text-sm <?php echo $is_reply ? 'text-primary' : 'text-slate-900 dark:text-white'; ?>">
-					<?php comment_author(); ?>
-					<?php if ( user_can( $comment->user_id, 'manage_options' ) ) : ?>
-						<i data-lucide="badge-check" class="w-3.5 h-3.5 ml-1" aria-hidden="true"></i>
-					<?php endif; ?>
-				</div>
-				<div class="text-xs font-medium text-slate-400">
-					<?php printf( _x( '%s پیش', 'comment date', 'eghtesadran' ), human_time_diff( get_comment_time( 'U' ), current_time( 'timestamp' ) ) ); ?>
-				</div>
+			<div class="shrink-0 <?php echo $is_reply ? 'w-8 h-8 md:w-10 md:h-10' : 'w-10 h-10 md:w-12 md:h-12'; ?> bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-500 font-bold text-lg overflow-hidden">
+				<?php echo get_avatar( $comment, $is_reply ? 40 : 48 ); ?>
 			</div>
+			<div class="flex-1 <?php echo $is_reply ? 'bg-white dark:bg-slate-800 border border-primary/20 p-4 rounded-2xl rounded-tr-none' : 'bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 p-4 md:p-5 rounded-2xl rounded-tr-none'; ?>">
+				<div class="flex items-center justify-between mb-2">
+					<div class="font-bold text-sm <?php echo $is_reply ? 'text-primary' : 'text-slate-900 dark:text-white'; ?>">
+						<?php comment_author(); ?>
+						<?php if ( user_can( $comment->user_id, 'manage_options' ) ) : ?>
+							<i data-lucide="badge-check" class="w-3.5 h-3.5 ml-1" aria-hidden="true"></i>
+						<?php endif; ?>
+					</div>
+					<div class="text-xs font-medium text-slate-400">
+						<?php printf( _x( '%s پیش', 'comment date', 'eghtesadran' ), human_time_diff( get_comment_time( 'U' ), current_time( 'timestamp' ) ) ); ?>
+					</div>
+				</div>
 
-			<?php if ( '0' == $comment->comment_approved ) : ?>
-				<p class="comment-awaiting-moderation text-xs text-orange-500 mb-2"><?php esc_html_e( 'دیدگاه شما در انتظار تایید است.', 'eghtesadran' ); ?></p>
-			<?php endif; ?>
+				<?php if ( '0' == $comment->comment_approved ) : ?>
+					<p class="comment-awaiting-moderation text-xs text-orange-500 mb-2"><?php esc_html_e( 'دیدگاه شما در انتظار تایید است.', 'eghtesadran' ); ?></p>
+				<?php endif; ?>
 
-			<div class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed text-justify">
-				<?php comment_text(); ?>
-			</div>
+				<div class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed text-justify">
+					<?php comment_text(); ?>
+				</div>
 
-			<div class="mt-3 flex justify-end">
-				<?php
-				comment_reply_link(
-					array_merge(
-						$args,
-						array(
-							'depth'     => $depth,
-							'max_depth' => $args['max_depth'],
-							'reply_text' => '<i data-lucide="reply" class="w-3 h-3" aria-hidden="true"></i> ' . __( 'پاسخ دادن', 'eghtesadran' ),
-							'add_below' => 'comment',
+				<div class="mt-3 flex justify-end">
+					<?php
+					comment_reply_link(
+						array_merge(
+							$args,
+							array(
+								'depth'     => $depth,
+								'max_depth' => $args['max_depth'],
+								'reply_text' => '<i data-lucide="reply" class="w-3 h-3" aria-hidden="true"></i> ' . __( 'پاسخ دادن', 'eghtesadran' ),
+								'add_below' => 'comment',
+							)
 						)
-					)
-				);
-				?>
+					);
+					?>
+				</div>
 			</div>
 		</div>
-	</div>
 	<?php
 }
 
@@ -820,4 +820,32 @@ if ( class_exists( 'Walker_Nav_Menu' ) ) {
 			$output .= "</li>\n";
 		}
 	}
+}
+
+/**
+ * Returns the primary category term for a post (with fallback to default).
+ *
+ * @param int|WP_Post|null $post Post ID or WP_Post object. Default is current post.
+ * @return WP_Term|null Category term object or null.
+ */
+function eghtesadran_get_primary_category( $post = null ) {
+	$post = get_post( $post );
+	if ( ! $post ) {
+		return null;
+	}
+
+	$primary_cat_id = get_post_meta( $post->ID, '_news_primary_category', true );
+	if ( ! empty( $primary_cat_id ) ) {
+		$term = get_term( $primary_cat_id, 'category' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			return $term;
+		}
+	}
+
+	$categories = get_the_category( $post->ID );
+	if ( ! empty( $categories ) && ! is_wp_error( $categories ) ) {
+		return $categories[0];
+	}
+
+	return null;
 }

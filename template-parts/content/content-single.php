@@ -48,11 +48,11 @@
 					<i data-lucide="home" class="w-3.5 h-3.5" aria-hidden="true"></i> <?php esc_html_e( 'صفحه اصلی', 'eghtesadran' ); ?>
 				</a>
 				<?php
-				$categories = get_the_category();
-				if ( ! empty( $categories ) ) :
+				$primary_cat = eghtesadran_get_primary_category( $post_id );
+				if ( $primary_cat ) :
 					?>
 					<span>/</span>
-					<a href="<?php echo esc_url( get_category_link( $categories[0]->term_id ) ); ?>" class="hover:text-primary transition-colors"><?php echo esc_html( $categories[0]->name ); ?></a>
+					<a href="<?php echo esc_url( get_category_link( $primary_cat->term_id ) ); ?>" class="hover:text-primary transition-colors"><?php echo esc_html( $primary_cat->name ); ?></a>
 				<?php endif; ?>
 			</nav>
 
@@ -79,29 +79,7 @@
 						<div class="flex items-center gap-1.5">
 							<i data-lucide="calendar" class="w-4 h-4 text-slate-400" aria-hidden="true"></i> <?php echo esc_html( get_the_date() ); ?>
 						</div>
-						<div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md text-slate-700 dark:text-slate-300">
-							<i data-lucide="user" class="w-4 h-4 text-primary" aria-hidden="true"></i>
-							<?php
-							$content_type = get_post_meta( $post_id, '_news_content_type', true );
-							if ( 'note' === $content_type && get_post_meta( $post_id, '_news_author_name', true ) ) {
-								$author_display = get_post_meta( $post_id, '_news_author_name', true );
-								$author_pos     = get_post_meta( $post_id, '_news_author_position', true );
-								echo esc_html( $author_display );
-								if ( $author_pos ) {
-									echo ' (' . esc_html( $author_pos ) . ')';
-								}
-							} elseif ( 'interview' === $content_type && get_post_meta( $post_id, '_news_interviewee_name', true ) ) {
-								$int_display = get_post_meta( $post_id, '_news_interviewee_name', true );
-								$int_pos     = get_post_meta( $post_id, '_news_interviewee_position', true );
-								echo esc_html( $int_display );
-								if ( $int_pos ) {
-									echo ' (' . esc_html( $int_pos ) . ')';
-								}
-							} else {
-								the_author();
-							}
-							?>
-						</div>
+
 					</div>
 					<div class="flex flex-wrap items-center gap-2 print:hidden">
 						<!-- Accessibility & Tools (Keep structure) -->
@@ -410,24 +388,7 @@
 				</div>
 			</div>
 
-			<!-- Author Box -->
-			<div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row gap-5 items-center md:items-start mb-8 text-center md:text-right print:hidden">
-				<?php echo get_avatar( get_the_author_meta( 'ID' ), 80, '', '', array( 'class' => 'w-20 h-20 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-sm shrink-0' ) ); ?>
-				<div class="flex-1">
-					<h4 class="text-lg font-black text-slate-900 dark:text-white mb-2"><?php the_author(); ?></h4>
-					<p class="text-xs font-bold text-primary mb-3"><?php echo esc_html( get_the_author_meta( 'description' ) ); ?></p>
-					<div class="flex items-center justify-center md:justify-start gap-3 mt-4">
-						<?php
-						$twitter  = get_the_author_meta( 'twitter' );
-						$linkedin = get_the_author_meta( 'linkedin' );
-						$email    = get_the_author_meta( 'email' );
-						?>
-						<?php if ( $twitter ) : ?><a href="<?php echo esc_url( $twitter ); ?>" class="text-slate-400 hover:text-primary transition-colors"><i data-lucide="twitter" class="w-4 h-4" aria-hidden="true"></i></a><?php endif; ?>
-						<?php if ( $linkedin ) : ?><a href="<?php echo esc_url( $linkedin ); ?>" class="text-slate-400 hover:text-primary transition-colors"><i data-lucide="linkedin" class="w-4 h-4" aria-hidden="true"></i></a><?php endif; ?>
-						<?php if ( $email ) : ?><a href="mailto:<?php echo esc_attr( $email ); ?>" class="text-slate-400 hover:text-primary transition-colors"><i data-lucide="mail" class="w-4 h-4" aria-hidden="true"></i></a><?php endif; ?>
-					</div>
-				</div>
-			</div>
+
 
 			<!-- Related Posts -->
 			<?php
@@ -456,10 +417,10 @@
 								<?php endif; ?>
 								<div class="flex flex-col justify-center">
 									<?php
-									$cats = get_the_category();
-									if ( ! empty( $cats ) ) :
+									$primary_cat = eghtesadran_get_primary_category();
+									if ( $primary_cat ) :
 										?>
-										<span class="text-[10px] font-bold text-primary mb-1"><?php echo esc_html( $cats[0]->name ); ?></span>
+										<span class="text-[10px] font-bold text-primary mb-1"><?php echo esc_html( $primary_cat->name ); ?></span>
 									<?php endif; ?>
 									<h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 leading-relaxed group-hover:text-primary dark:group-hover:text-red-400 transition-colors">
 										<?php the_title(); ?>
@@ -477,7 +438,7 @@
 
 	// Comments Section (Outside the loop, inside the column)
 	if ( comments_open() || get_comments_number() ) :
-		// comments_template();
+		comments_template();
 	endif;
 	?>
 
