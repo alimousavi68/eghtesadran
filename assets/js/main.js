@@ -338,4 +338,156 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 9. WordPress Default Gallery Lightbox Slider Logic
+    const initDefaultGalleries = () => {
+        const galleries = document.querySelectorAll('.article-content .wp-block-gallery, .article-content .gallery');
+        if (galleries.length === 0) return;
+
+        // Create Lightbox DOM structure dynamically
+        let lightbox = document.querySelector('.eghtesadran-lightbox');
+        if (!lightbox) {
+            lightbox = document.createElement('div');
+            lightbox.className = 'eghtesadran-lightbox';
+            lightbox.innerHTML = `
+                <div class="eghtesadran-lightbox-top">
+                    <div class="eghtesadran-lightbox-counter"><span class="lightbox-current">1</span> / <span class="lightbox-total">1</span></div>
+                    <button class="eghtesadran-lightbox-close" title="بستن">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+                <div class="eghtesadran-lightbox-main">
+                    <button class="eghtesadran-lightbox-btn lightbox-prev" title="قبلی">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
+                    <div class="eghtesadran-lightbox-content">
+                        <img class="eghtesadran-lightbox-img" src="" alt="Gallery Image">
+                    </div>
+                    <button class="eghtesadran-lightbox-btn lightbox-next" title="بعدی">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                </div>
+                <div class="eghtesadran-lightbox-bottom">
+                    <p class="eghtesadran-lightbox-caption"></p>
+                </div>
+            `;
+            document.body.appendChild(lightbox);
+        }
+
+        const lightboxImg = lightbox.querySelector('.eghtesadran-lightbox-img');
+        const currentSpan = lightbox.querySelector('.lightbox-current');
+        const totalSpan = lightbox.querySelector('.lightbox-total');
+        const closeBtn = lightbox.querySelector('.eghtesadran-lightbox-close');
+        const prevBtn = lightbox.querySelector('.lightbox-prev');
+        const nextBtn = lightbox.querySelector('.lightbox-next');
+        const captionText = lightbox.querySelector('.eghtesadran-lightbox-caption');
+
+        let currentGalleryImages = [];
+        let currentImageIndex = 0;
+
+        const openLightbox = (images, index) => {
+            currentGalleryImages = images;
+            currentImageIndex = index;
+            totalSpan.textContent = images.length;
+            updateLightboxContent();
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        const closeLightbox = () => {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        const updateLightboxContent = () => {
+            if (!currentGalleryImages[currentImageIndex]) return;
+            lightboxImg.style.opacity = '0';
+            
+            setTimeout(() => {
+                const currentItem = currentGalleryImages[currentImageIndex];
+                lightboxImg.src = currentItem.src;
+                currentSpan.textContent = currentImageIndex + 1;
+                captionText.textContent = currentItem.caption || '';
+                lightboxImg.style.opacity = '1';
+            }, 150);
+        };
+
+        const showPrev = () => {
+            currentImageIndex = (currentImageIndex > 0) ? currentImageIndex - 1 : currentGalleryImages.length - 1;
+            updateLightboxContent();
+        };
+
+        const showNext = () => {
+            currentImageIndex = (currentImageIndex < currentGalleryImages.length - 1) ? currentImageIndex + 1 : 0;
+            updateLightboxContent();
+        };
+
+        // Attach event listeners to gallery items
+        galleries.forEach(gallery => {
+            // Find all image items in this specific gallery
+            const items = gallery.querySelectorAll('figure.wp-block-image, .gallery-item');
+            const galleryImagesData = [];
+
+            items.forEach((item, index) => {
+                const img = item.querySelector('img');
+                const anchor = item.querySelector('a');
+                if (!img) return;
+
+                // Full size image URL fallback: anchor href if it points to an image, else img src
+                let fullUrl = img.src;
+                if (anchor && /\.(jpg|jpeg|png|gif|webp)/i.test(anchor.href)) {
+                    fullUrl = anchor.href;
+                    // Prevent navigation
+                    anchor.addEventListener('click', (e) => e.preventDefault());
+                }
+
+                // Try to get caption
+                let caption = '';
+                const figcaption = item.querySelector('figcaption');
+                const ddCaption = item.querySelector('.wp-caption-text, .gallery-caption');
+                if (figcaption) {
+                    caption = figcaption.textContent.trim();
+                } else if (ddCaption) {
+                    caption = ddCaption.textContent.trim();
+                } else if (img.alt) {
+                    caption = img.alt;
+                }
+
+                galleryImagesData.push({
+                    src: fullUrl,
+                    caption: caption
+                });
+
+                // Add click listener to the image or wrapper
+                const clickTarget = anchor || img;
+                clickTarget.style.cursor = 'pointer';
+                clickTarget.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openLightbox(galleryImagesData, index);
+                });
+            });
+        });
+
+        // Controls
+        closeBtn.addEventListener('click', closeLightbox);
+        prevBtn.addEventListener('click', showPrev);
+        nextBtn.addEventListener('click', showNext);
+
+        // Close on click background
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox || e.target.classList.contains('eghtesadran-lightbox-content') || e.target.classList.contains('eghtesadran-lightbox-main')) {
+                closeLightbox();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') showPrev(); // RTL layouts swap arrows intuitively
+            if (e.key === 'ArrowLeft') showNext();
+        });
+    };
+
+    initDefaultGalleries();
+
 });

@@ -579,3 +579,314 @@ nav.eghtesadran-pagination .next.page-numbers:hover {
 .dark .article-content figure figcaption {
     color: #94a3b8;
 }
+
+/* 10. WordPress Default Gallery Grid Styling & Lightbox */
+.article-content .wp-block-gallery,
+.article-content .gallery {
+    display: grid !important;
+    /* Default fallback: 3 columns on desktop, 2 on mobile if no column count is defined */
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    margin: 2rem 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+}
+
+@media (min-width: 768px) {
+    .article-content .wp-block-gallery,
+    .article-content .gallery {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* User-defined columns map */
+/* 1 Column */
+.article-content .wp-block-gallery.columns-1,
+.article-content .gallery.gallery-columns-1 {
+    grid-template-columns: repeat(1, 1fr) !important;
+}
+
+/* 2 Columns */
+.article-content .wp-block-gallery.columns-2,
+.article-content .gallery.gallery-columns-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* 3 Columns */
+.article-content .wp-block-gallery.columns-3,
+.article-content .gallery.gallery-columns-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+@media (min-width: 640px) {
+    .article-content .wp-block-gallery.columns-3,
+    .article-content .gallery.gallery-columns-3 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* 4 Columns */
+.article-content .wp-block-gallery.columns-4,
+.article-content .gallery.gallery-columns-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+@media (min-width: 640px) {
+    .article-content .wp-block-gallery.columns-4,
+    .article-content .gallery.gallery-columns-4 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+@media (min-width: 1024px) {
+    .article-content .wp-block-gallery.columns-4,
+    .article-content .gallery.gallery-columns-4 {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+
+/* 5 Columns */
+.article-content .wp-block-gallery.columns-5,
+.article-content .gallery.gallery-columns-5 {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+@media (min-width: 640px) {
+    .article-content .wp-block-gallery.columns-5,
+    .article-content .gallery.gallery-columns-5 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+@media (min-width: 1024px) {
+    .article-content .wp-block-gallery.columns-5,
+    .article-content .gallery.gallery-columns-5 {
+        grid-template-columns: repeat(5, 1fr) !important;
+    }
+}
+
+/* 6 Columns */
+.article-content .wp-block-gallery.columns-6,
+.article-content .gallery.gallery-columns-6 {
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+@media (min-width: 768px) {
+    .article-content .wp-block-gallery.columns-6,
+    .article-content .gallery.gallery-columns-6 {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+@media (min-width: 1024px) {
+    .article-content .wp-block-gallery.columns-6,
+    .article-content .gallery.gallery-columns-6 {
+        grid-template-columns: repeat(6, 1fr) !important;
+    }
+}
+
+/* 7 Columns */
+.article-content .wp-block-gallery.columns-7,
+.article-content .gallery.gallery-columns-7 {
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+@media (min-width: 768px) {
+    .article-content .wp-block-gallery.columns-7,
+    .article-content .gallery.gallery-columns-7 {
+        grid-template-columns: repeat(5, 1fr) !important;
+    }
+}
+@media (min-width: 1024px) {
+    .article-content .wp-block-gallery.columns-7,
+    .article-content .gallery.gallery-columns-7 {
+        grid-template-columns: repeat(7, 1fr) !important;
+    }
+}
+
+/* 8 Columns */
+.article-content .wp-block-gallery.columns-8,
+.article-content .gallery.gallery-columns-8 {
+    grid-template-columns: repeat(4, 1fr) !important;
+}
+@media (min-width: 768px) {
+    .article-content .wp-block-gallery.columns-8,
+    .article-content .gallery.gallery-columns-8 {
+        grid-template-columns: repeat(6, 1fr) !important;
+    }
+}
+@media (min-width: 1024px) {
+    .article-content .wp-block-gallery.columns-8,
+    .article-content .gallery.gallery-columns-8 {
+        grid-template-columns: repeat(8, 1fr) !important;
+    }
+}
+
+/* Override WordPress Gutenberg & Classic inner figure/item styles */
+.article-content .wp-block-gallery figure.wp-block-image,
+.article-content .gallery .gallery-item {
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #f8fafc !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+    width: 100% !important;
+    display: block !important;
+    aspect-ratio: 4/3 !important;
+}
+
+.dark .article-content .wp-block-gallery figure.wp-block-image,
+.dark .article-content .gallery .gallery-item {
+    border-color: #334155 !important;
+    background-color: #1e293b !important;
+}
+
+.article-content .wp-block-gallery figure.wp-block-image:hover,
+.article-content .gallery .gallery-item:hover {
+    transform: translateY(-2px) !important;
+    border-color: var(--primary-color, #dc2626) !important;
+    box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.15) !important;
+}
+
+/* Make images inside gallery perfectly uniform and cropped */
+.article-content .wp-block-gallery figure.wp-block-image a,
+.article-content .wp-block-gallery figure.wp-block-image img,
+.article-content .gallery .gallery-item a,
+.article-content .gallery .gallery-item img {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+}
+
+.article-content .gallery .gallery-caption {
+    display: none !important; /* Hide old default captions inside grid */
+}
+
+/* Lightbox styles specifically for default galleries to match our premium UI */
+.eghtesadran-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    direction: rtl;
+    pointer-events: none;
+}
+
+.eghtesadran-lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.eghtesadran-lightbox-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffffff;
+    width: 100%;
+}
+
+.eghtesadran-lightbox-counter {
+    background-color: rgba(255, 255, 255, 0.1);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-family: var(--font-primary);
+}
+
+.eghtesadran-lightbox-close {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eghtesadran-lightbox-close:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.eghtesadran-lightbox-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    max-width: 1024px;
+    width: 100%;
+    margin: 16px auto;
+}
+
+.eghtesadran-lightbox-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 50%;
+    transition: background-color 0.2s, transform 0.2s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eghtesadran-lightbox-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.eghtesadran-lightbox-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.eghtesadran-lightbox-img {
+    max-width: 100%;
+    max-height: 75vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    transform: scale(0.95);
+    opacity: 0;
+}
+
+.eghtesadran-lightbox.active .eghtesadran-lightbox-img {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.eghtesadran-lightbox-bottom {
+    text-align: center;
+    color: #ffffff;
+    padding-bottom: 24px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.eghtesadran-lightbox-caption {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e2e8f0;
+    max-width: 650px;
+    margin: 0 auto;
+}
