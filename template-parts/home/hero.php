@@ -92,6 +92,12 @@ $hero_side_query = new WP_Query( $side_args );
 								<?php endif; ?>
 							</div>
 						<?php endif; ?>
+						<?php 
+						$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+						if ( ! empty( $rotiter ) ) :
+							?>
+							<span class="block text-xs text-slate-400 dark:text-slate-500 font-bold mb-3"><?php echo esc_html( $rotiter ); ?></span>
+						<?php endif; ?>
 						<h2 class="text-xl md:text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-white leading-snug md:leading-[1.3] mb-4 group-hover:text-primary dark:group-hover:text-red-400 transition-colors">
 							<?php the_title(); ?>
 						</h2>
@@ -148,6 +154,12 @@ $hero_side_query = new WP_Query( $side_args );
 										</span>
 									<?php endif; ?>
 								</div>
+							<?php endif; ?>
+							<?php 
+							$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+							if ( ! empty( $rotiter ) ) :
+								?>
+								<span class="block text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1.5"><?php echo esc_html( $rotiter ); ?></span>
 							<?php endif; ?>
 							<h4 class="text-slate-800 dark:text-slate-200 font-medium leading-snug text-sm lg:text-[14px] group-hover:text-primary dark:group-hover:text-red-400 transition-colors">
 								<?php the_title(); ?>

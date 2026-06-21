@@ -933,6 +933,12 @@ class Eghtesadran_Widget_Universal_Posts extends Eghtesadran_Widget_Base {
 									<div class="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-lg flex items-center gap-1">
 										<i data-lucide="flame" class="w-3.5 h-3.5"></i> <?php esc_html_e( 'داغ', 'eghtesadran' ); ?>
 									</div>
+									<?php 
+									$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+									if ( ! empty( $rotiter ) ) :
+										?>
+										<span class="block text-[10px] md:text-xs text-slate-300/90 font-bold mb-2.5 leading-relaxed"><?php echo esc_html( $rotiter ); ?></span>
+									<?php endif; ?>
 									<h4 class="text-sm md:text-base font-black text-white leading-relaxed group-hover:text-primary transition-colors">
 										<?php the_title(); ?>
 									</h4>
@@ -948,6 +954,12 @@ class Eghtesadran_Widget_Universal_Posts extends Eghtesadran_Widget_Base {
 									<?php endif; ?>
 								</div>
 								<div class="flex-1">
+									<?php 
+									$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+									if ( ! empty( $rotiter ) ) :
+										?>
+										<span class="block text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1.5 leading-relaxed"><?php echo esc_html( $rotiter ); ?></span>
+									<?php endif; ?>
 									<h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-red-400 transition-colors leading-relaxed">
 										<?php the_title(); ?>
 									</h4>
@@ -969,6 +981,12 @@ class Eghtesadran_Widget_Universal_Posts extends Eghtesadran_Widget_Base {
 									<?php echo get_the_time( 'H:i' ); ?>
 								</div>
 								<h4 class="text-xs font-bold text-slate-700 dark:text-slate-350 group-hover:text-primary dark:group-hover:text-red-400 transition-colors leading-relaxed">
+									<?php 
+									$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+									if ( ! empty( $rotiter ) ) :
+										?>
+										<span class="block text-[9px] text-slate-400 dark:text-slate-500 font-bold mb-1.5 leading-relaxed"><?php echo esc_html( $rotiter ); ?></span>
+									<?php endif; ?>
 									<?php the_title(); ?>
 								</h4>
 							</a>
@@ -1303,6 +1321,12 @@ class Eghtesadran_Widget_Multi_Purpose_Posts extends Eghtesadran_Widget_Base {
 											<?php echo esc_html( get_the_date() ); ?>
 										</span>
 									</div>
+									<?php 
+									$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+									if ( ! empty( $rotiter ) ) :
+										?>
+										<span class="block text-[10px] md:text-xs text-slate-400 dark:text-slate-500 font-bold mb-2"><?php echo esc_html( $rotiter ); ?></span>
+									<?php endif; ?>
 									<h3 class="text-base md:text-lg font-extrabold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-red-400 transition-colors mb-2">
 										<?php the_title(); ?>
 									</h3>
@@ -1351,6 +1375,12 @@ class Eghtesadran_Widget_Multi_Purpose_Posts extends Eghtesadran_Widget_Base {
 												<?php echo esc_html( get_the_date() ); ?>
 											</span>
 										</div>
+										<?php 
+										$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+										if ( ! empty( $rotiter ) ) :
+											?>
+											<span class="block text-[10px] md:text-xs text-slate-400 dark:text-slate-500 font-bold mb-2 leading-snug"><?php echo esc_html( $rotiter ); ?></span>
+										<?php endif; ?>
 										<h3 class="text-base font-extrabold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-red-400 transition-colors mb-2 leading-snug">
 											<?php the_title(); ?>
 										</h3>
@@ -1398,6 +1428,12 @@ class Eghtesadran_Widget_Multi_Purpose_Posts extends Eghtesadran_Widget_Base {
 										<?php echo esc_html( get_the_date() ); ?>
 									</span>
 								</div>
+								<?php 
+								$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+								if ( ! empty( $rotiter ) ) :
+									?>
+									<span class="block text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1.5 leading-snug"><?php echo esc_html( $rotiter ); ?></span>
+								<?php endif; ?>
 								<h4 class="text-slate-800 dark:text-slate-200 font-bold text-xs md:text-sm group-hover:text-primary dark:group-hover:text-red-400 transition-colors leading-snug">
 									<?php the_title(); ?>
 								</h4>
@@ -1540,6 +1576,12 @@ class Eghtesadran_Widget_Note extends Eghtesadran_Widget_Base {
 										<span class="font-normal text-slate-400"><?php echo esc_html( $author_pos ); ?></span>
 									<?php endif; ?>
 								</p>
+								<?php 
+								$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+								if ( ! empty( $rotiter ) ) :
+									?>
+									<span class="block text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1.5 leading-relaxed"><?php echo esc_html( $rotiter ); ?></span>
+								<?php endif; ?>
 								<h4 class="font-bold text-slate-850 dark:text-slate-200 text-xs md:text-sm group-hover:text-primary dark:group-hover:text-red-400 transition-colors leading-relaxed line-clamp-2">
 									<?php the_title(); ?>
 								</h4>
@@ -1682,6 +1724,12 @@ class Eghtesadran_Widget_Interview extends Eghtesadran_Widget_Base {
 										<span class="font-normal text-slate-400"><?php echo esc_html( $interviewee_pos ); ?></span>
 									<?php endif; ?>
 								</p>
+								<?php 
+								$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+								if ( ! empty( $rotiter ) ) :
+									?>
+									<span class="block text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1.5 leading-relaxed"><?php echo esc_html( $rotiter ); ?></span>
+								<?php endif; ?>
 								<h4 class="font-bold text-slate-850 dark:text-slate-200 text-xs md:text-sm group-hover:text-primary dark:group-hover:text-red-400 transition-colors leading-relaxed line-clamp-2">
 									<?php the_title(); ?>
 								</h4>

@@ -205,6 +205,51 @@ function eghtesadran_customize_register( $wp_customize ) {
 		);
 	}
 
+	// Related Posts Settings (Single Post)
+	$wp_customize->add_setting(
+		'eghtesadran_related_posts_count',
+		array(
+			'default'           => 2,
+			'sanitize_callback' => 'absint',
+		)
+	);
+
+	$wp_customize->add_control(
+		'eghtesadran_related_posts_count',
+		array(
+			'label'       => __( 'تعداد مطالب مرتبط (تک‌نوشته)', 'eghtesadran' ),
+			'section'     => 'eghtesadran_theme_options',
+			'type'        => 'number',
+			'input_attrs' => array(
+				'min'  => 1,
+				'max'  => 10,
+				'step' => 1,
+			),
+		)
+	);
+
+	$wp_customize->add_setting(
+		'eghtesadran_related_posts_query_type',
+		array(
+			'default'           => 'category',
+			'sanitize_callback' => 'sanitize_key',
+		)
+	);
+
+	$wp_customize->add_control(
+		'eghtesadran_related_posts_query_type',
+		array(
+			'label'   => __( 'نوع کویری مطالب مرتبط (تک‌نوشته)', 'eghtesadran' ),
+			'section' => 'eghtesadran_theme_options',
+			'type'    => 'select',
+			'choices' => array(
+				'category' => __( 'بر اساس دسته‌بندی', 'eghtesadran' ),
+				'tag'      => __( 'بر اساس برچسب‌ها', 'eghtesadran' ),
+				'both'     => __( 'بر اساس دسته‌بندی و برچسب‌ها', 'eghtesadran' ),
+			),
+		)
+	);
+
 	// Multimedia Section
 	$wp_customize->add_section(
 		'eghtesadran_multimedia_options',

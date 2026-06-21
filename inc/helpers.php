@@ -471,6 +471,12 @@ function eghtesadran_render_category_section( $category_slug, $layout = 'A' ) {
 										<?php echo esc_html( get_the_date() ); ?>
 									</span>
 								</div>
+								<?php 
+								$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+								if ( ! empty( $rotiter ) ) :
+									?>
+									<span class="block text-[10px] md:text-xs text-slate-400 dark:text-slate-500 font-bold mb-2"><?php echo esc_html( $rotiter ); ?></span>
+								<?php endif; ?>
 								<h3 class="text-base md:text-lg font-extrabold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-red-400 transition-colors mb-2">
 									<?php the_title(); ?>
 								</h3>
@@ -510,6 +516,12 @@ function eghtesadran_render_category_section( $category_slug, $layout = 'A' ) {
 											<?php echo esc_html( get_the_date() ); ?>
 										</span>
 									</div>
+									<?php 
+									$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+									if ( ! empty( $rotiter ) ) :
+										?>
+										<span class="block text-[10px] md:text-xs text-slate-400 dark:text-slate-500 font-bold mb-2 leading-snug"><?php echo esc_html( $rotiter ); ?></span>
+									<?php endif; ?>
 									<h3 class="text-base font-extrabold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-red-400 transition-colors mb-2 leading-snug">
 										<?php the_title(); ?>
 									</h3>
@@ -548,6 +560,12 @@ function eghtesadran_render_category_section( $category_slug, $layout = 'A' ) {
 									<?php echo esc_html( get_the_date() ); ?>
 								</span>
 							</div>
+							<?php 
+							$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
+							if ( ! empty( $rotiter ) ) :
+								?>
+								<span class="block text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1.5 leading-snug"><?php echo esc_html( $rotiter ); ?></span>
+							<?php endif; ?>
 							<h4 class="text-slate-800 dark:text-slate-200 font-bold text-xs md:text-sm group-hover:text-primary dark:group-hover:text-red-400 transition-colors leading-snug">
 								<?php the_title(); ?>
 							</h4>

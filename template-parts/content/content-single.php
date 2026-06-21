@@ -62,6 +62,12 @@
 					<?php if ( $badge && isset( $badges[$badge] ) ) : ?>
 						<span class="inline-block bg-primary/10 text-primary text-xs font-black px-3 py-1 rounded-full mb-3"><?php echo esc_html( $badges[$badge] ); ?></span>
 					<?php endif; ?>
+					<?php 
+					$rotiter = get_post_meta( $post_id, '_news_rotiter', true );
+					if ( ! empty( $rotiter ) ) :
+						?>
+						<span class="block text-xs md:text-sm text-slate-400 dark:text-slate-500 font-bold mb-5"><?php echo esc_html( $rotiter ); ?></span>
+					<?php endif; ?>
 					<h1 class="text-2xl md:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white leading-[1.8] md:leading-loose mb-5">
 						<?php the_title(); ?>
 					</h1>
@@ -204,6 +210,21 @@
 			<!-- Article Body -->
 			<div class="article-content text-slate-800 dark:text-slate-200 text-sm md:text-base leading-loose text-justify space-y-6">
 				<?php the_content(); ?>
+
+				<?php
+				$source_name = get_post_meta( $post_id, '_news_source_name', true );
+				$source_link = get_post_meta( $post_id, '_news_source_link', true );
+				if ( ! empty( $source_name ) ) :
+					?>
+					<div class="news-source-meta mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5 print:hidden">
+						<span><?php esc_html_e( 'منبع:', 'eghtesadran' ); ?></span>
+						<?php if ( ! empty( $source_link ) ) : ?>
+							<a href="<?php echo esc_url( $source_link ); ?>" target="_blank" rel="nofollow noopener" class="text-primary hover:underline transition-colors"><?php echo esc_html( $source_name ); ?></a>
+						<?php else : ?>
+							<span class="text-slate-700 dark:text-slate-350"><?php echo esc_html( $source_name ); ?></span>
+						<?php endif; ?>
+					</div>
+				<?php endif; ?>
 
 				<!-- Photo Report Gallery Display -->
 				<?php if ( 'photo_report' === $content_type ) : 
@@ -392,13 +413,60 @@
 
 			<!-- Related Posts -->
 			<?php
-			$related_query = new WP_Query(
-				array(
-					'category__in'   => wp_get_post_categories( $post_id ),
-					'post__not_in'   => array( $post_id ),
-					'posts_per_page' => 2,
-				)
+			$related_count      = get_theme_mod( 'eghtesadran_related_posts_count', 2 );
+			$related_query_type = get_theme_mod( 'eghtesadran_related_posts_query_type', 'category' );
+
+			$related_args = array(
+				'post__not_in'        => array( $post_id ),
+				'posts_per_page'      => $related_count,
+				'post_status'         => 'publish',
+				'ignore_sticky_posts' => 1,
 			);
+
+			if ( 'tag' === $related_query_type ) {
+				$tag_ids = wp_get_post_terms( $post_id, 'post_tag', array( 'fields' => 'ids' ) );
+				if ( ! empty( $tag_ids ) ) {
+					$related_args['tag__in'] = $tag_ids;
+				} else {
+					$related_args['post__in'] = array( 0 );
+				}
+			} elseif ( 'both' === $related_query_type ) {
+				$categories = wp_get_post_categories( $post_id );
+				$tag_ids    = wp_get_post_terms( $post_id, 'post_tag', array( 'fields' => 'ids' ) );
+				
+				$tax_query = array( 'relation' => 'OR' );
+				
+				if ( ! empty( $categories ) ) {
+					$tax_query[] = array(
+						'taxonomy' => 'category',
+						'field'    => 'term_id',
+						'terms'    => $categories,
+					);
+				}
+				if ( ! empty( $tag_ids ) ) {
+					$tax_query[] = array(
+						'taxonomy' => 'post_tag',
+						'field'    => 'term_id',
+						'terms'    => $tag_ids,
+					);
+				}
+				
+				if ( count( $tax_query ) > 1 ) {
+					$related_args['tax_query'] = $tax_query;
+				} else {
+					$related_args['post__in'] = array( 0 );
+				}
+			} else {
+				// Default category
+				$categories = wp_get_post_categories( $post_id );
+				if ( ! empty( $categories ) ) {
+					$related_args['category__in'] = $categories;
+				} else {
+					$related_args['post__in'] = array( 0 );
+				}
+			}
+
+			$related_query = new WP_Query( $related_args );
 
 			if ( $related_query->have_posts() ) :
 				?>
