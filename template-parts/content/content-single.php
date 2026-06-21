@@ -59,8 +59,16 @@
 			<!-- Article Header -->
 			<header class="mb-8">
 				<div class="mb-4">
-					<?php if ( $badge && isset( $badges[$badge] ) ) : ?>
-						<span class="inline-block bg-primary/10 text-primary text-xs font-black px-3 py-1 rounded-full mb-3"><?php echo esc_html( $badges[$badge] ); ?></span>
+					<?php 
+					if ( $badge && isset( $badges[$badge] ) ) : 
+						$badge_class = 'bg-red-500/10 text-primary border border-red-100 dark:border-red-950/30';
+						if ( 'featured' === $badge ) {
+							$badge_class = 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-950/30';
+						} elseif ( 'trending' === $badge ) {
+							$badge_class = 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-950/30';
+						}
+						?>
+						<span class="inline-block <?php echo esc_attr( $badge_class ); ?> text-xs font-black px-3 py-1 rounded-full mb-3"><?php echo esc_html( $badges[$badge] ); ?></span>
 					<?php endif; ?>
 					<?php 
 					$rotiter = get_post_meta( $post_id, '_news_rotiter', true );

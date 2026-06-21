@@ -933,12 +933,6 @@ class Eghtesadran_Widget_Universal_Posts extends Eghtesadran_Widget_Base {
 									<div class="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-lg flex items-center gap-1">
 										<i data-lucide="flame" class="w-3.5 h-3.5"></i> <?php esc_html_e( 'داغ', 'eghtesadran' ); ?>
 									</div>
-									<?php 
-									$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
-									if ( ! empty( $rotiter ) ) :
-										?>
-										<span class="block text-[10px] md:text-xs text-slate-300/90 font-bold mb-2.5 leading-relaxed"><?php echo esc_html( $rotiter ); ?></span>
-									<?php endif; ?>
 									<h4 class="text-sm md:text-base font-black text-white leading-relaxed group-hover:text-primary transition-colors">
 										<?php the_title(); ?>
 									</h4>
@@ -954,12 +948,6 @@ class Eghtesadran_Widget_Universal_Posts extends Eghtesadran_Widget_Base {
 									<?php endif; ?>
 								</div>
 								<div class="flex-1">
-									<?php 
-									$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
-									if ( ! empty( $rotiter ) ) :
-										?>
-										<span class="block text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1.5 leading-relaxed"><?php echo esc_html( $rotiter ); ?></span>
-									<?php endif; ?>
 									<h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-red-400 transition-colors leading-relaxed">
 										<?php the_title(); ?>
 									</h4>
@@ -977,16 +965,28 @@ class Eghtesadran_Widget_Universal_Posts extends Eghtesadran_Widget_Base {
 					<?php while ( $query->have_posts() ) : $query->the_post(); ?>
 						<div class="flex gap-3 items-start group cursor-pointer border-b border-slate-50 dark:border-slate-750 pb-3 last:border-0 last:pb-0">
 							<a href="<?php the_permalink(); ?>" class="flex gap-3 items-start w-full">
-								<div class="bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400 font-extrabold text-[10px] px-2 py-0.5 rounded min-w-12 flex items-center justify-center gap-1 shrink-0">
-									<?php echo get_the_time( 'H:i' ); ?>
+								<?php
+								$badge = get_post_meta( get_the_ID(), '_eghtesadran_badge', true );
+								$badge_label = '';
+								$badge_class = 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400';
+								if ( 'featured' === $badge ) {
+									$badge_label = __( 'ویژه', 'eghtesadran' );
+									$badge_class = 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50';
+								} elseif ( 'breaking' === $badge ) {
+									$badge_label = __( 'فوری', 'eghtesadran' );
+									$badge_class = 'bg-red-50 text-primary dark:bg-red-950/30 dark:text-red-400 border border-red-100 dark:border-red-900/50';
+								} elseif ( 'trending' === $badge ) {
+									$badge_label = __( 'داغ', 'eghtesadran' );
+									$badge_class = 'bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400 border border-orange-100 dark:border-orange-900/50';
+								} else {
+									$badge_label = get_the_time( 'H:i' );
+									$badge_class = 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400';
+								}
+								?>
+								<div class="<?php echo esc_attr( $badge_class ); ?> font-extrabold text-[10px] px-2 py-0.5 rounded min-w-12 flex items-center justify-center gap-1 shrink-0">
+									<?php echo esc_html( $badge_label ); ?>
 								</div>
 								<h4 class="text-xs font-bold text-slate-700 dark:text-slate-350 group-hover:text-primary dark:group-hover:text-red-400 transition-colors leading-relaxed">
-									<?php 
-									$rotiter = get_post_meta( get_the_ID(), '_news_rotiter', true );
-									if ( ! empty( $rotiter ) ) :
-										?>
-										<span class="block text-[9px] text-slate-400 dark:text-slate-500 font-bold mb-1.5 leading-relaxed"><?php echo esc_html( $rotiter ); ?></span>
-									<?php endif; ?>
 									<?php the_title(); ?>
 								</h4>
 							</a>
