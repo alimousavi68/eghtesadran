@@ -9,9 +9,10 @@
 		<?php
 		while ( have_posts() ) :
 			the_post();
-			$post_id = get_the_ID();
-			$badge   = get_post_meta( $post_id, '_eghtesadran_badge', true );
-			$lead    = get_post_meta( $post_id, '_eghtesadran_lead', true );
+			$post_id      = get_the_ID();
+			$badge        = get_post_meta( $post_id, '_eghtesadran_badge', true );
+			$lead         = get_post_meta( $post_id, '_eghtesadran_lead', true );
+			$content_type = get_post_meta( $post_id, '_news_content_type', true );
 
 			$badges = array(
 				'featured' => __( 'اخبار ویژه', 'eghtesadran' ),
