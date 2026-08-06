@@ -126,6 +126,8 @@ jQuery(document).ready(function($) {
                     });
                 } else {
                     alert(response.data.message || 'خطایی رخ داده است.');
+                }
+            }
         });
     });
 
