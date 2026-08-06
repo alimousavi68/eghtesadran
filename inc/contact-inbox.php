@@ -273,7 +273,7 @@ function eghtesadran_admin_inbox_scripts( $hook ) {
 		'eghtesadran-admin-inbox',
 		get_template_directory_uri() . '/assets/js/contact-admin.js',
 		array( 'jquery' ),
-		'1.0',
+		time(),
 		true
 	);
 
@@ -295,9 +295,14 @@ function eghtesadran_render_inbox_page() {
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'eghtesadran_messages';
 
-	// Auto-mark all messages as read when opening the main inbox page to satisfy the requirement
-	// "با باز کردن بخش صندوق پیام یا علامتگذاری پیامها به عنوان خوانده شده، این نشانگر به روز شود و تعداد صفر را نشان دهد"
-	$wpdb->query( "UPDATE $table_name SET status = 'read' WHERE status = 'unread'" );
+	// Direct Delete All Action via GET (Fallback for no JS / cached JS)
+	if ( isset( $_GET['action'] ) && 'delete_all' === $_GET['action'] ) {
+		if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'eghtesadran_delete_all_nonce' ) ) {
+			$wpdb->query( "TRUNCATE TABLE $table_name" );
+			wp_safe_redirect( admin_url( 'admin.php?page=eghtesadran-inbox&deleted_all=1' ) );
+			exit;
+		}
+	}
 
 	// Handle standard query params for filters
 	$status_filter = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : 'all';
@@ -350,10 +355,16 @@ function eghtesadran_render_inbox_page() {
 	?>
 	<div class="wrap" style="direction: rtl;">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'صندوق پیام‌ها (Inbox)', 'eghtesadran' ); ?></h1>
-		<button type="button" id="btn-delete-all-messages" class="page-title-action button-link-delete" style="color: #b32d2e; border: 1px solid #b32d2e; margin-right: 15px; border-radius: 4px; padding: 4px 10px; font-weight: bold; background: #fff; cursor: pointer;">
+		<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=eghtesadran-inbox&action=delete_all' ), 'eghtesadran_delete_all_nonce' ) ); ?>" id="btn-delete-all-messages" class="page-title-action button-link-delete" onclick="return confirm('<?php esc_attr_e( 'آیا از حذف تمامی پیام‌های صندوق اطمینان دارید؟ این عمل غیرقابل بازگشت است.', 'eghtesadran' ); ?>');" style="color: #b32d2e; border: 1px solid #b32d2e; margin-right: 15px; border-radius: 4px; padding: 4px 10px; font-weight: bold; background: #fff; text-decoration: none; display: inline-block;">
 			<?php esc_html_e( 'حذف همه پیام‌ها', 'eghtesadran' ); ?>
-		</button>
+		</a>
 		<hr class="wp-header-end">
+
+		<?php if ( isset( $_GET['deleted_all'] ) && '1' === $_GET['deleted_all'] ) : ?>
+			<div class="notice notice-success is-dismissible" style="margin-top: 15px; margin-bottom: 15px;">
+				<p><?php esc_html_e( 'تمامی پیام‌ها با موفقیت حذف شدند.', 'eghtesadran' ); ?></p>
+			</div>
+		<?php endif; ?>
 
 		<ul class="subsubsub">
 			<li class="all"><a href="<?php echo esc_url( admin_url( 'admin.php?page=eghtesadran-inbox' ) ); ?>" class="<?php echo $status_filter === 'all' ? 'current' : ''; ?>"><?php esc_html_e( 'همه', 'eghtesadran' ); ?> <span class="count">(<?php echo $all_count; ?>)</span></a> |</li>
