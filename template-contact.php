@@ -72,6 +72,24 @@ get_header();
 							<textarea id="contact-message" name="message" rows="6" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-sm resize-none" placeholder="پیام خود را در این بخش بنویسید..."></textarea>
 						</div>
 
+						<!-- Dynamic Captcha -->
+						<?php $captcha = eghtesadran_generate_captcha(); ?>
+						<div>
+							<label for="contact-captcha" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+								<?php esc_html_e( 'کد امنیتی (کپچا)', 'eghtesadran' ); ?> <span class="text-red-500">*</span>
+							</label>
+							<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+								<div class="flex items-center justify-between gap-3 bg-slate-100 dark:bg-slate-700/60 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 shrink-0">
+									<span id="captcha-question" class="text-sm font-bold text-slate-800 dark:text-slate-200 select-none"><?php echo esc_html( $captcha['question'] ); ?></span>
+									<button type="button" id="btn-refresh-captcha" class="text-slate-400 hover:text-primary transition-colors p-1 flex items-center justify-center focus:outline-none" title="<?php esc_attr_e( 'تغییر کد امنیتی', 'eghtesadran' ); ?>">
+										<i data-lucide="refresh-cw" class="w-4 h-4"></i>
+									</button>
+								</div>
+								<input type="number" id="contact-captcha" name="captcha_answer" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-sm" placeholder="پاسخ را به عدد وارد کنید">
+								<input type="hidden" name="captcha_token" id="captcha-token" value="<?php echo esc_attr( $captcha['token'] ); ?>">
+							</div>
+						</div>
+
 						<div id="contact-form-message" class="hidden p-4 rounded-xl text-sm font-medium"></div>
 
 						<div>
@@ -102,6 +120,29 @@ document.addEventListener('DOMContentLoaded', function() {
 	const submitBtn = document.getElementById('contact-submit-btn');
 	const btnText = document.getElementById('btn-text');
 	const btnLoader = document.getElementById('btn-loader');
+	const refreshCaptchaBtn = document.getElementById('btn-refresh-captcha');
+	const captchaQuestion = document.getElementById('captcha-question');
+	const captchaTokenInput = document.getElementById('captcha-token');
+	const captchaAnswerInput = document.getElementById('contact-captcha');
+
+	function refreshCaptcha() {
+		fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=eghtesadran_refresh_captcha')
+			.then(res => res.json())
+			.then(data => {
+				if (data.success) {
+					captchaQuestion.textContent = data.data.question;
+					captchaTokenInput.value = data.data.token;
+					captchaAnswerInput.value = '';
+				}
+			});
+	}
+
+	if (refreshCaptchaBtn) {
+		refreshCaptchaBtn.addEventListener('click', function(e) {
+			e.preventDefault();
+			refreshCaptcha();
+		});
+	}
 
 	form.addEventListener('submit', function(e) {
 		e.preventDefault();
@@ -111,9 +152,10 @@ document.addEventListener('DOMContentLoaded', function() {
 		const email = document.getElementById('contact-email').value.trim();
 		const phone = document.getElementById('contact-phone').value.trim();
 		const message = document.getElementById('contact-message').value.trim();
+		const captchaAns = captchaAnswerInput.value.trim();
 
-		if (!name || !email || !phone || !message) {
-			showMessage('لطفا تمامی فیلدها را به درستی پر کنید.', 'error');
+		if (!name || !email || !phone || !message || !captchaAns) {
+			showMessage('لطفا تمامی فیلدها و پاسخ کد امنیتی را وارد کنید.', 'error');
 			return;
 		}
 
@@ -152,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			submitBtn.disabled = false;
 			btnText.textContent = 'ارسال پیام';
 			btnLoader.classList.add('hidden');
+			refreshCaptcha();
 
 			if (data.success) {
 				showMessage(data.data.message, 'success');
@@ -164,6 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			submitBtn.disabled = false;
 			btnText.textContent = 'ارسال پیام';
 			btnLoader.classList.add('hidden');
+			refreshCaptcha();
 			showMessage('خطایی در ارتباط با سرور رخ داده است. لطفا دوباره تلاش کنید.', 'error');
 		});
 	});

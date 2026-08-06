@@ -126,6 +126,32 @@ jQuery(document).ready(function($) {
                     });
                 } else {
                     alert(response.data.message || 'خطایی رخ داده است.');
+        });
+    });
+
+    // Handle Delete All Messages action
+    $(document).on('click', '#btn-delete-all-messages', function(e) {
+        e.preventDefault();
+        if (!confirm('آیا از حذف تمامی پیام‌های صندوق اطمینان دارید؟ این عمل غیرقابل بازگشت است.')) {
+            return;
+        }
+
+        $.ajax({
+            url: eghtesadranInbox.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'eghtesadran_admin_inbox_action',
+                inbox_action: 'delete_all',
+                nonce: eghtesadranInbox.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#the-list').html('<tr class="no-items"><td class="colspanchange" colspan="4">پیامی یافت نشد.</td></tr>');
+                    $('.subsubsub .count').text('(0)');
+                    updateMenuBadgeCount();
+                    alert(response.data.message);
+                } else {
+                    alert(response.data.message || 'خطایی رخ داده است.');
                 }
             }
         });

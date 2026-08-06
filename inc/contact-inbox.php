@@ -44,6 +44,38 @@ function eghtesadran_ensure_table_exists() {
 add_action( 'init', 'eghtesadran_ensure_table_exists' );
 
 /**
+ * Generate dynamic math captcha.
+ */
+function eghtesadran_generate_captcha() {
+	$num1 = rand( 1, 9 );
+	$num2 = rand( 1, 9 );
+	$sum  = $num1 + $num2;
+
+	$persian_digits = array( '۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹' );
+	$english_digits = array( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' );
+
+	$num1_fa = str_replace( $english_digits, $persian_digits, (string) $num1 );
+	$num2_fa = str_replace( $english_digits, $persian_digits, (string) $num2 );
+
+	$question_text = sprintf( __( 'حاصل %s + %s برابر است با؟', 'eghtesadran' ), $num1_fa, $num2_fa );
+	$token         = wp_create_nonce( 'eghtesadran_captcha_calc_' . $sum );
+
+	return array(
+		'question' => $question_text,
+		'token'    => $token,
+	);
+}
+
+/**
+ * AJAX Handler to refresh captcha.
+ */
+function eghtesadran_ajax_refresh_captcha() {
+	wp_send_json_success( eghtesadran_generate_captcha() );
+}
+add_action( 'wp_ajax_eghtesadran_refresh_captcha', 'eghtesadran_ajax_refresh_captcha' );
+add_action( 'wp_ajax_nopriv_eghtesadran_refresh_captcha', 'eghtesadran_ajax_refresh_captcha' );
+
+/**
  * Get count of unread messages.
  */
 function eghtesadran_get_unread_message_count() {
@@ -63,7 +95,7 @@ function eghtesadran_register_inbox_menu() {
 	$unread_count = eghtesadran_get_unread_message_count();
 	$badge = '';
 	if ( $unread_count > 0 ) {
-		$badge = ' <span class="update-plugins count-' . esc_attr( $unread_count ) . '"><span class="plugin-count">' . esc_html( $unread_count ) . '</span></span>';
+		$badge = ' <span class="awaiting-mod update-plugins count-' . esc_attr( $unread_count ) . '"><span class="pending-count plugin-count">' . esc_html( number_format_i18n( $unread_count ) ) . '</span></span>';
 	}
 
 	add_menu_page(
@@ -95,6 +127,14 @@ function eghtesadran_submit_contact_form() {
 	// Verify Nonce
 	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'eghtesadran_contact_nonce' ) ) {
 		wp_send_json_error( array( 'message' => __( 'خطای امنیتی رخ داده است. لطفا صفحه را بروزرسانی کنید.', 'eghtesadran' ) ) );
+	}
+
+	// Verify Captcha
+	$user_captcha  = isset( $_POST['captcha_answer'] ) ? (int) $_POST['captcha_answer'] : -1;
+	$captcha_token = isset( $_POST['captcha_token'] ) ? sanitize_text_field( $_POST['captcha_token'] ) : '';
+
+	if ( ! wp_verify_nonce( $captcha_token, 'eghtesadran_captcha_calc_' . $user_captcha ) ) {
+		wp_send_json_error( array( 'message' => __( 'پاسخ کد امنیتی (کپچا) اشتباه است. لطفا مجددا تلاش کنید.', 'eghtesadran' ) ) );
 	}
 
 	// Extract and validate inputs
@@ -177,6 +217,9 @@ function eghtesadran_ajax_admin_inbox_action() {
 	if ( 'delete' === $action ) {
 		$wpdb->delete( $table_name, array( 'id' => $msg_id ), array( '%d' ) );
 		wp_send_json_success( array( 'message' => __( 'پیام با موفقیت حذف شد.', 'eghtesadran' ) ) );
+	} elseif ( 'delete_all' === $action ) {
+		$wpdb->query( "TRUNCATE TABLE $table_name" );
+		wp_send_json_success( array( 'message' => __( 'تمامی پیام‌ها با موفقیت حذف شدند.', 'eghtesadran' ) ) );
 	} elseif ( 'mark_read' === $action ) {
 		$wpdb->update( $table_name, array( 'status' => 'read' ), array( 'id' => $msg_id ), array( '%s' ), array( '%d' ) );
 		wp_send_json_success( array( 'message' => __( 'پیام به عنوان خوانده شده علامت‌گذاری شد.', 'eghtesadran' ) ) );
@@ -307,6 +350,9 @@ function eghtesadran_render_inbox_page() {
 	?>
 	<div class="wrap" style="direction: rtl;">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'صندوق پیام‌ها (Inbox)', 'eghtesadran' ); ?></h1>
+		<button type="button" id="btn-delete-all-messages" class="page-title-action button-link-delete" style="color: #b32d2e; border: 1px solid #b32d2e; margin-right: 15px; border-radius: 4px; padding: 4px 10px; font-weight: bold; background: #fff; cursor: pointer;">
+			<?php esc_html_e( 'حذف همه پیام‌ها', 'eghtesadran' ); ?>
+		</button>
 		<hr class="wp-header-end">
 
 		<ul class="subsubsub">
