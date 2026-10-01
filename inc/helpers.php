@@ -10,6 +10,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Keeps display-only lists finite when stored settings are invalid.
+ *
+ * Positive configured counts are preserved, including existing large lists.
+ * In particular, never pass -1 (all posts) from a display setting to WP_Query.
+ *
+ * @param mixed $value   Stored post count.
+ * @param int   $default Default count for this list.
+ * @return int
+ */
+function eghtesadran_normalize_posts_count( $value, $default ) {
+	$count = is_scalar( $value ) ? (int) $value : 0;
+
+	return $count > 0 ? $count : max( 1, (int) $default );
+}
+
+/**
  * Returns the current theme version.
  *
  * @return string
@@ -431,6 +447,7 @@ function eghtesadran_render_category_section( $category_slug, $layout = 'A' ) {
 		array(
 			'category_name'  => $category_slug,
 			'posts_per_page' => $posts_per_page,
+			'no_found_rows'  => true,
 		)
 	);
 

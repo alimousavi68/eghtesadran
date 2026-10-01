@@ -7,7 +7,7 @@
 
 $section_title  = get_theme_mod( 'eghtesadran_multimedia_title', __( 'چندرسانه‌ای', 'eghtesadran' ) );
 $section_desc   = get_theme_mod( 'eghtesadran_multimedia_desc', __( 'گزارش‌های ویدئویی و تصویری اختصاصی', 'eghtesadran' ) );
-$posts_per_page = get_theme_mod( 'eghtesadran_multimedia_posts_per_page', 3 );
+$posts_per_page = eghtesadran_normalize_posts_count( get_theme_mod( 'eghtesadran_multimedia_posts_per_page', 3 ), 3 );
 $orderby        = get_theme_mod( 'eghtesadran_multimedia_orderby', 'date' );
 $order          = get_theme_mod( 'eghtesadran_multimedia_order', 'DESC' );
 
@@ -15,6 +15,7 @@ $multimedia_query = new WP_Query(
 	array(
 		'post_type'      => 'post',
 		'posts_per_page' => $posts_per_page,
+		'no_found_rows'  => true,
 		'orderby'        => $orderby,
 		'order'          => $order,
 		'meta_query'     => array(

@@ -82,10 +82,33 @@ function eghtesadran_get_unread_message_count() {
 	global $wpdb;
 	$table_name = $wpdb->prefix . 'eghtesadran_messages';
 	// Check if table exists first to prevent errors
-	if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_name ) ) ) !== $table_name ) {
 		return 0;
 	}
 	return (int) $wpdb->get_var( "SELECT COUNT(*) FROM $table_name WHERE status = 'unread'" );
+}
+
+/**
+ * Counts inbox statuses in one pass, without caching potentially stale totals.
+ *
+ * @return array<string, int>
+ */
+function eghtesadran_get_message_counts() {
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'eghtesadran_messages';
+	// Compare statuses in SQL so the table's collation keeps its existing semantics.
+	$counts = $wpdb->get_row(
+		"SELECT COUNT(*) AS total,
+			COALESCE(SUM(status = 'read'), 0) AS read_count,
+			COALESCE(SUM(status = 'unread'), 0) AS unread_count
+		FROM $table_name"
+	);
+
+	return array(
+		'all'    => (int) ( $counts->total ?? 0 ),
+		'read'   => (int) ( $counts->read_count ?? 0 ),
+		'unread' => (int) ( $counts->unread_count ?? 0 ),
+	);
 }
 
 /**
@@ -255,7 +278,7 @@ function eghtesadran_admin_inbox_scripts( $hook ) {
 				'eghtesadran-admin-badge',
 				get_template_directory_uri() . '/assets/js/contact-admin-badge.js',
 				array( 'jquery' ),
-				'1.0',
+				eghtesadran_get_asset_version( 'assets/js/contact-admin-badge.js' ),
 				true
 			);
 			wp_localize_script( 'eghtesadran-admin-badge', 'eghtesadranInboxAdmin', array(
@@ -332,10 +355,15 @@ function eghtesadran_render_inbox_page() {
 		$params[] = $like_search;
 	}
 
-	// Total count query
+	// Reuse the header totals for pagination when there is no search filter.
+	$counts          = eghtesadran_get_message_counts();
+	$all_count       = $counts['all'];
+	$read_count      = $counts['read'];
+	$unread_count_db = $counts['unread'];
+
 	if ( empty( $params ) ) {
-		$total_query = "SELECT COUNT(*) FROM $table_name WHERE $where";
-		$total_items = (int) $wpdb->get_var( $total_query );
+		$count_key   = in_array( $status_filter, array( 'read', 'unread' ), true ) ? $status_filter : 'all';
+		$total_items = $counts[ $count_key ];
 	} else {
 		$total_query = $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE $where", $params );
 		$total_items = (int) $wpdb->get_var( $total_query );
@@ -348,10 +376,6 @@ function eghtesadran_render_inbox_page() {
 	$query_params = array_merge( $params, array( $per_page, $offset ) );
 	$messages = $wpdb->get_results( $wpdb->prepare( $query, $query_params ), ARRAY_A );
 
-	// Header counts
-	$all_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM $table_name" );
-	$read_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM $table_name WHERE status = 'read'" );
-	$unread_count_db = (int) $wpdb->get_var( "SELECT COUNT(*) FROM $table_name WHERE status = 'unread'" );
 	?>
 	<div class="wrap" style="direction: rtl;">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'صندوق پیام‌ها (Inbox)', 'eghtesadran' ); ?></h1>

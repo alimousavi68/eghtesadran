@@ -15,7 +15,7 @@ $right_cat        = (int) get_theme_mod( 'eghtesadran_hero_right_cat', 0 );
 $left_cat         = (int) get_theme_mod( 'eghtesadran_hero_left_cat', 0 );
 $right_offset     = (int) get_theme_mod( 'eghtesadran_hero_right_offset', 0 );
 $left_offset      = (int) get_theme_mod( 'eghtesadran_hero_left_offset', 0 );
-$left_count       = (int) get_theme_mod( 'eghtesadran_hero_left_count', 5 );
+$left_count       = eghtesadran_normalize_posts_count( get_theme_mod( 'eghtesadran_hero_left_count', 5 ), 5 );
 $show_date        = get_theme_mod( 'eghtesadran_hero_show_date', '1' ) === '1';
 $show_cat_tag     = get_theme_mod( 'eghtesadran_hero_show_cat_tag', '1' ) === '1';
 $left_title       = get_theme_mod( 'eghtesadran_hero_left_title', __( 'مهم ترین اخبار', 'eghtesadran' ) );
@@ -25,6 +25,7 @@ $left_icon        = get_theme_mod( 'eghtesadran_hero_left_icon', 'trending-up' )
 $main_args = array(
 	'post_type'      => 'post',
 	'posts_per_page' => 1,
+	'no_found_rows'  => true,
 	'orderby'        => 'date',
 	'order'          => 'DESC',
 );
@@ -46,6 +47,7 @@ if ( $hero_main_query->have_posts() ) {
 $side_args = array(
 	'post_type'      => 'post',
 	'posts_per_page' => $left_count,
+	'no_found_rows'  => true,
 	'post__not_in'   => array( $exclude_id ),
 	'orderby'        => 'date',
 	'order'          => 'DESC',

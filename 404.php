@@ -41,6 +41,7 @@ get_header(); ?>
 			array(
 				'post_type'      => 'post',
 				'posts_per_page' => 3,
+				'no_found_rows'  => true,
 				'meta_query'     => array(
 					array(
 						'key'     => '_eghtesadran_badge',
@@ -56,6 +57,7 @@ get_header(); ?>
 				array(
 					'post_type'      => 'post',
 					'posts_per_page' => 3,
+					'no_found_rows'  => true,
 				)
 			);
 		}

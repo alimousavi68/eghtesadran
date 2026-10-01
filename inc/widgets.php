@@ -828,7 +828,7 @@ class Eghtesadran_Widget_Universal_Posts extends Eghtesadran_Widget_Base {
 		$instance['query_type']      = ( ! empty( $new_instance['query_type'] ) ) ? sanitize_key( $new_instance['query_type'] ) : 'latest';
 		$instance['category']        = ( ! empty( $new_instance['category'] ) ) ? absint( $new_instance['category'] ) : 0;
 		$instance['order']           = ( ! empty( $new_instance['order'] ) ) ? sanitize_text_field( $new_instance['order'] ) : 'DESC';
-		$instance['posts_count']     = ( ! empty( $new_instance['posts_count'] ) ) ? absint( $new_instance['posts_count'] ) : 5;
+		$instance['posts_count']     = eghtesadran_normalize_posts_count( $new_instance['posts_count'] ?? 5, 5 );
 		$instance['offset']          = ( ! empty( $new_instance['offset'] ) ) ? absint( $new_instance['offset'] ) : 0;
 		$instance['exclude_current'] = ( ! empty( $new_instance['exclude_current'] ) ) ? '1' : '';
 		$instance['show_view_all']   = ( ! empty( $new_instance['show_view_all'] ) ) ? '1' : '';
@@ -866,7 +866,8 @@ class Eghtesadran_Widget_Universal_Posts extends Eghtesadran_Widget_Base {
 		$query_args = array(
 			'post_type'           => $instance['post_type'],
 			'post_status'         => 'publish',
-			'posts_per_page'      => $instance['posts_count'],
+			'posts_per_page'      => eghtesadran_normalize_posts_count( $instance['posts_count'], 5 ),
+			'no_found_rows'       => true,
 			'offset'              => $instance['offset'],
 			'ignore_sticky_posts' => true,
 		);
@@ -1189,7 +1190,7 @@ class Eghtesadran_Widget_Multi_Purpose_Posts extends Eghtesadran_Widget_Base {
 		$instance['query_type']     = ( ! empty( $new_instance['query_type'] ) ) ? sanitize_key( $new_instance['query_type'] ) : 'category';
 		$instance['category']       = ( ! empty( $new_instance['category'] ) ) ? absint( $new_instance['category'] ) : 0;
 		$instance['order']          = ( ! empty( $new_instance['order'] ) ) ? sanitize_text_field( $new_instance['order'] ) : 'DESC';
-		$instance['posts_count']    = ( ! empty( $new_instance['posts_count'] ) ) ? absint( $new_instance['posts_count'] ) : 3;
+		$instance['posts_count']    = eghtesadran_normalize_posts_count( $new_instance['posts_count'] ?? 3, 3 );
 		$instance['offset']         = ( ! empty( $new_instance['offset'] ) ) ? absint( $new_instance['offset'] ) : 0;
 		$instance['column_mode']    = ( ! empty( $new_instance['column_mode'] ) ) ? sanitize_key( $new_instance['column_mode'] ) : 'single';
 		$instance['show_excerpt']   = $this->sanitize_checkbox( $new_instance['show_excerpt'] ?? '' );
@@ -1230,7 +1231,8 @@ class Eghtesadran_Widget_Multi_Purpose_Posts extends Eghtesadran_Widget_Base {
 		$query_args = array(
 			'post_type'           => 'post',
 			'post_status'         => 'publish',
-			'posts_per_page'      => $instance['posts_count'],
+			'posts_per_page'      => eghtesadran_normalize_posts_count( $instance['posts_count'], 3 ),
+			'no_found_rows'       => true,
 			'offset'              => $instance['offset'],
 			'ignore_sticky_posts' => true,
 		);
@@ -1500,7 +1502,7 @@ class Eghtesadran_Widget_Note extends Eghtesadran_Widget_Base {
 	public function update( $new_instance, $old_instance ) {
 		return array(
 			'title'       => sanitize_text_field( $new_instance['title'] ?? '' ),
-			'posts_count' => absint( $new_instance['posts_count'] ?? 3 ),
+			'posts_count' => eghtesadran_normalize_posts_count( $new_instance['posts_count'] ?? 3, 3 ),
 		);
 	}
 
@@ -1522,7 +1524,8 @@ class Eghtesadran_Widget_Note extends Eghtesadran_Widget_Base {
 
 		$query_args = array(
 			'post_type'      => 'post',
-			'posts_per_page' => $instance['posts_count'],
+			'posts_per_page' => eghtesadran_normalize_posts_count( $instance['posts_count'], 3 ),
+			'no_found_rows'  => true,
 			'meta_query'     => array(
 				array(
 					'key'   => '_news_content_type',
@@ -1647,7 +1650,7 @@ class Eghtesadran_Widget_Interview extends Eghtesadran_Widget_Base {
 	public function update( $new_instance, $old_instance ) {
 		return array(
 			'title'       => sanitize_text_field( $new_instance['title'] ?? '' ),
-			'posts_count' => absint( $new_instance['posts_count'] ?? 3 ),
+			'posts_count' => eghtesadran_normalize_posts_count( $new_instance['posts_count'] ?? 3, 3 ),
 		);
 	}
 
@@ -1669,7 +1672,8 @@ class Eghtesadran_Widget_Interview extends Eghtesadran_Widget_Base {
 
 		$query_args = array(
 			'post_type'      => 'post',
-			'posts_per_page' => $instance['posts_count'],
+			'posts_per_page' => eghtesadran_normalize_posts_count( $instance['posts_count'], 3 ),
+			'no_found_rows'  => true,
 			'meta_query'     => array(
 				array(
 					'key'   => '_news_content_type',

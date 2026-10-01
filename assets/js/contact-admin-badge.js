@@ -1,11 +1,22 @@
 jQuery(document).ready(function($) {
+    var requestInFlight = false;
+
     // Function to poll the server for the unread message count.
     function checkUnreadMessagesCount() {
+        // A slow response must not accumulate more requests from the same tab.
+        if (requestInFlight) {
+            return;
+        }
+
+        requestInFlight = true;
         $.ajax({
             url: eghtesadranInboxAdmin.ajax_url,
             type: 'POST',
             data: {
                 action: 'eghtesadran_get_unread_count'
+            },
+            complete: function() {
+                requestInFlight = false;
             },
             success: function(response) {
                 if (response.success && typeof response.data.unread_count !== 'undefined') {

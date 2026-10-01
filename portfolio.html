@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گزیده نمونه کارهای طراحی سایت | Portfolio</title>
+    <!-- استفاده از فونت زیبای وزیرمتن برای تایپوگرافی حرفه‌ای -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet"
+        type="text/css" />
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* متغیرهای رنگی برای تم لوکس و تیره */
+        :root {
+            --bg-color: #0a0a0a;
+            --surface-color: #141414;
+            --text-main: #f0f0f0;
+            --text-muted: #888888;
+            --accent-color: #d4af37;
+            /* رنگ طلایی لوکس */
+            --border-color: #222222;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* استایل‌های هدر و بخش معرفی */
+        header {
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            background: radial-gradient(circle at 50% -20%, #1a1a1a 0%, var(--bg-color) 70%);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .subtitle-top {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        h1 span {
+            font-weight: 300;
+            color: var(--text-muted);
+        }
+
+        .header-desc {
+            color: var(--text-muted);
+            max-width: 500px;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .scroll-down {
+            margin-top: 3rem;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-15px);
+            }
+
+            60% {
+                transform: translateY(-7px);
+            }
+        }
+
+        /* کانتینر اصلی پروژه‌ها */
+        .portfolio-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+        }
+
+        /* گرید هر پروژه */
+        .project-row {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 8rem;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-row.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* جابجایی ترتیب در ردیف‌های زوج برای تنوع بصری */
+        .project-row:nth-child(even) {
+            grid-template-columns: 1.5fr 1fr;
+        }
+
+        .project-row:nth-child(even) .project-info {
+            order: 2;
+        }
+
+        .project-row:nth-child(even) .project-mockup {
+            order: 1;
+        }
+
+        /* اطلاعات پروژه */
+        .project-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .project-category {
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .project-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .btn-visit {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            padding: 0.8rem 1.8rem;
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            width: max-content;
+        }
+
+        .btn-visit:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+
+        .btn-visit i {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-visit:hover i {
+            transform: translateX(-5px);
+            /* حرکت فلش به سمت چپ در زبان فارسی */
+        }
+
+        /* موکاپ مک بوک با CSS */
+        .project-mockup {
+            width: 100%;
+            perspective: 1000px;
+        }
+
+        .macbook {
+            position: relative;
+            background: #2a2a2a;
+            border-radius: 12px 12px 0 0;
+            padding: 2% 2% 3% 2%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid #333;
+        }
+
+        .macbook-screen {
+            position: relative;
+            background: #000;
+            aspect-ratio: 16/10;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        /* افکت اسکرول تصویر در هاور */
+        .macbook-screen img {
+            width: 100%;
+            height: auto;
+            min-height: 100%;
+            object-fit: cover;
+            object-position: top;
+            transition: object-position 4s ease-in-out;
+        }
+
+        .macbook:hover .macbook-screen img {
+            object-position: bottom;
+        }
+
+        /* پایه مک‌بوک */
+        .macbook-base {
+            position: relative;
+            background: linear-gradient(to right, #444 0%, #555 5%, #333 95%, #222 100%);
+            height: 12px;
+            border-radius: 0 0 12px 12px;
+            margin: 0 -2.5%;
+            width: 105%;
+            box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+        }
+
+        .macbook-notch {
+            width: 15%;
+            height: 4px;
+            background: #1a1a1a;
+            border-radius: 0 0 4px 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ریسپانسیو برای موبایل */
+        @media (max-width: 900px) {
+
+            .project-row,
+            .project-row:nth-child(even) {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .project-row:nth-child(even) .project-info {
+                order: 1;
+            }
+
+            .project-row:nth-child(even) .project-mockup {
+                order: 2;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .project-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="subtitle-top">طراحی و توسعه وب‌سایت</div>
+        <h1>گزیده <span>نمونه کارها</span></h1>
+        <p class="header-desc">مجموعه‌ای از پروژه‌های منتخب طراحی سایت با تمرکز بر رابط کاربری مدرن، سرعت و تجربه کاربری
+            استاندارد.</p>
+        <div class="scroll-down">
+            <i class="fa-solid fa-angle-down"></i>
+        </div>
+    </header>
+
+    <div class="portfolio-container">
+
+        <!-- Project 1 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">شرکتی / برندینگ</span>
+                <h2 class="project-title">پروژه السلام (Al-Salam)</h2>
+                <a href="https://demo-branding.com/alsalam/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <!-- نکته برای شما: در اینجا تصویر اسکرین‌شات سایت خود را قرار دهید -->
+                        <!-- بهترین ابعاد تصویر: عرض 1440 پیکسل. ارتفاع مهم نیست (اسکرول میشود) -->
+                        <img src="https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1440&auto=format&fit=crop"
+                            alt="Al-Salam Website">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">سرمایه‌گذاری و مالی</span>
+                <h2 class="project-title">شرکت رویش کپیتال</h2>
+                <a href="https://rooyeshcapital.com/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1440&auto=format&fit=crop"
+                            alt="Rooyesh Capital Website">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">شرکتی / سازمانی</span>
+                <h2 class="project-title">مجموعه نوژین</h2>
+                <a href="https://demo-branding.com/nojin_new/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <img src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=1440&auto=format&fit=crop"
+                            alt="Nojin Website">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">شرکتی / برندینگ</span>
+                <h2 class="project-title">پروژه پرسیس</h2>
+                <a href="https://demo-branding.com/persis/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <img src="https://images.unsplash.com/photo-1542744094-24638ea0b56c?q=80&w=1440&auto=format&fit=crop"
+                            alt="Persis Website">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 5 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">مهندسی و توسعه</span>
+                <h2 class="project-title">توسعه پارس نوژین</h2>
+                <a href="https://www.tpnojine.com/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1440&auto=format&fit=crop"
+                            alt="TP Nojine Website">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 6 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">صنعتی و معدنی</span>
+                <h2 class="project-title">صنایع مس کرمان</h2>
+                <a href="https://kermancopper.com/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1440&auto=format&fit=crop"
+                            alt="Kerman Copper Website">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 7 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">پایگاه خبری / اقتصادی</span>
+                <h2 class="project-title">نماد اقتصاد</h2>
+                <a href="https://namadeghtesad.ir/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1440&auto=format&fit=crop"
+                            alt="Namad Eghtesad Website">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 8 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">زنجیره تامین و بازرگانی</span>
+                <h2 class="project-title">مجموعه راواکس</h2>
+                <a href="https://ravaxsc.com/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1440&auto=format&fit=crop"
+                            alt="Ravax SC Website">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 9 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">پایگاه خبری و رسانه</span>
+                <h2 class="project-title">روزنامه چارسوق</h2>
+                <a href="https://charsoghnewspaper.com/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <img src="https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=1440&auto=format&fit=crop"
+                            alt="Charsogh Newspaper">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 10 -->
+        <div class="project-row">
+            <div class="project-info">
+                <span class="project-category">اخبار مالی و بانکی</span>
+                <h2 class="project-title">پایگاه خبری بنکر</h2>
+                <a href="https://banker.ir/" target="_blank" class="btn-visit">
+                    مشاهده سایت <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="project-mockup">
+                <div class="macbook">
+                    <div class="macbook-screen">
+                        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a223690?q=80&w=1440&auto=format&fit=crop"
+                            alt="Banker Website">
+                    </div>
+                    <div class="macbook-base">
+                        <div class="macbook-notch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>طراحی و توسعه با ❤️ برای نمایش بهترین تجربه‌های وب</p>
+    </footer>
+
+    <!-- اسکریپت برای انیمیشن نمایش هنگام اسکرول -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const projects = document.querySelectorAll('.project-row');
+            projects.forEach(project => {
+                observer.observe(project);
+            });
+        });
+    </script>
+</body>
+
+</html>

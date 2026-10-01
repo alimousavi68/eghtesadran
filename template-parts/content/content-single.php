@@ -422,12 +422,13 @@
 
 			<!-- Related Posts -->
 			<?php
-			$related_count      = get_theme_mod( 'eghtesadran_related_posts_count', 2 );
+			$related_count      = eghtesadran_normalize_posts_count( get_theme_mod( 'eghtesadran_related_posts_count', 2 ), 2 );
 			$related_query_type = get_theme_mod( 'eghtesadran_related_posts_query_type', 'category' );
 
 			$related_args = array(
 				'post__not_in'        => array( $post_id ),
 				'posts_per_page'      => $related_count,
+				'no_found_rows'       => true,
 				'post_status'         => 'publish',
 				'ignore_sticky_posts' => 1,
 			);
