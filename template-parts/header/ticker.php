@@ -5,6 +5,11 @@
  * @package Eghtesadran
  */
 
+// Internal pages must skip both the ticker markup and its database queries.
+if ( ! is_front_page() ) {
+	return;
+}
+
 $ticker_items = eghtesadran_get_ticker_items( 5 );
 ?>
 <div class="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 py-2 overflow-hidden flex items-center">

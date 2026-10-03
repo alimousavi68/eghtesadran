@@ -425,58 +425,7 @@
 			$related_count      = eghtesadran_normalize_posts_count( get_theme_mod( 'eghtesadran_related_posts_count', 2 ), 2 );
 			$related_query_type = get_theme_mod( 'eghtesadran_related_posts_query_type', 'category' );
 
-			$related_args = array(
-				'post__not_in'        => array( $post_id ),
-				'posts_per_page'      => $related_count,
-				'no_found_rows'       => true,
-				'post_status'         => 'publish',
-				'ignore_sticky_posts' => 1,
-			);
-
-			if ( 'tag' === $related_query_type ) {
-				$tag_ids = wp_get_post_terms( $post_id, 'post_tag', array( 'fields' => 'ids' ) );
-				if ( ! empty( $tag_ids ) ) {
-					$related_args['tag__in'] = $tag_ids;
-				} else {
-					$related_args['post__in'] = array( 0 );
-				}
-			} elseif ( 'both' === $related_query_type ) {
-				$categories = wp_get_post_categories( $post_id );
-				$tag_ids    = wp_get_post_terms( $post_id, 'post_tag', array( 'fields' => 'ids' ) );
-				
-				$tax_query = array( 'relation' => 'OR' );
-				
-				if ( ! empty( $categories ) ) {
-					$tax_query[] = array(
-						'taxonomy' => 'category',
-						'field'    => 'term_id',
-						'terms'    => $categories,
-					);
-				}
-				if ( ! empty( $tag_ids ) ) {
-					$tax_query[] = array(
-						'taxonomy' => 'post_tag',
-						'field'    => 'term_id',
-						'terms'    => $tag_ids,
-					);
-				}
-				
-				if ( count( $tax_query ) > 1 ) {
-					$related_args['tax_query'] = $tax_query;
-				} else {
-					$related_args['post__in'] = array( 0 );
-				}
-			} else {
-				// Default category
-				$categories = wp_get_post_categories( $post_id );
-				if ( ! empty( $categories ) ) {
-					$related_args['category__in'] = $categories;
-				} else {
-					$related_args['post__in'] = array( 0 );
-				}
-			}
-
-			$related_query = new WP_Query( $related_args );
+			$related_query = eghtesadran_get_related_posts_query( $post_id, $related_count, $related_query_type );
 
 			if ( $related_query->have_posts() ) :
 				?>

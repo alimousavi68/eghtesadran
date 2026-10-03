@@ -26,6 +26,64 @@ function eghtesadran_normalize_posts_count( $value, $default ) {
 }
 
 /**
+ * Builds the unpaginated related list using WordPress's post-term cache.
+ *
+ * get_the_terms() reuses relationships primed by the main query and category
+ * display. Core invalidates that cache when terms change; no TTL is needed.
+ * An empty WP_Query avoids a posts-table query when no relation can match.
+ *
+ * @param int    $post_id    Current post ID.
+ * @param int    $count      Number of related posts.
+ * @param string $query_type Category, tag, or both.
+ * @return WP_Query
+ */
+function eghtesadran_get_related_posts_query( $post_id, $count, $query_type ) {
+	$args = array(
+		'post__not_in'        => array( (int) $post_id ),
+		'posts_per_page'      => eghtesadran_normalize_posts_count( $count, 2 ),
+		'no_found_rows'       => true,
+		'post_status'         => 'publish',
+		'ignore_sticky_posts' => 1,
+	);
+
+	$taxonomies = array( 'category' );
+	if ( 'tag' === $query_type ) {
+		$taxonomies = array( 'post_tag' );
+	} elseif ( 'both' === $query_type ) {
+		$taxonomies = array( 'category', 'post_tag' );
+	}
+
+	$term_ids = array();
+	foreach ( $taxonomies as $taxonomy ) {
+		$terms = get_the_terms( $post_id, $taxonomy );
+		if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+			$term_ids[ $taxonomy ] = array_map( 'intval', wp_list_pluck( $terms, 'term_id' ) );
+		}
+	}
+
+	if ( empty( $term_ids ) ) {
+		return new WP_Query();
+	}
+
+	if ( 'both' === $query_type ) {
+		$args['tax_query'] = array( 'relation' => 'OR' );
+		foreach ( $term_ids as $taxonomy => $ids ) {
+			$args['tax_query'][] = array(
+				'taxonomy' => $taxonomy,
+				'field'    => 'term_id',
+				'terms'    => $ids,
+			);
+		}
+	} elseif ( 'tag' === $query_type ) {
+		$args['tag__in'] = $term_ids['post_tag'];
+	} else {
+		$args['category__in'] = $term_ids['category'];
+	}
+
+	return new WP_Query( $args );
+}
+
+/**
  * Returns the current theme version.
  *
  * @return string
