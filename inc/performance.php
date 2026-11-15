@@ -66,3 +66,21 @@ add_action( 'transition_post_status', 'eghtesadran_on_post_transition', 10, 2 );
  * @return void
  */
 add_action( 'deleted_post', 'eghtesadran_bump_cache_ver' );
+
+/**
+ * Builds a transient cache key for a widget query.
+ *
+ * The key is derived from the widget's settings (type, category, count,
+ * offset, order, post_type) plus the global cache version. The current
+ * post ID is deliberately excluded so the same cache is reused across
+ * different single pages.
+ *
+ * @param string $prefix Short prefix, e.g. 'esr_wup' or 'esr_wmp'.
+ * @param array  $parts  Associative array of key components.
+ * @return string Transient key (≤ 172 chars).
+ */
+function eghtesadran_widget_cache_key( $prefix, $parts ) {
+	$parts['v'] = eghtesadran_get_cache_ver();
+	$hash       = substr( md5( wp_json_encode( $parts ) ), 0, 12 );
+	return $prefix . '_' . $hash;
+}

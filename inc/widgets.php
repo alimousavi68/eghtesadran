@@ -862,39 +862,83 @@ class Eghtesadran_Widget_Universal_Posts extends Eghtesadran_Widget_Base {
 			'more_url'        => '',
 		) );
 
-		// Query args
-		$query_args = array(
-			'post_type'           => $instance['post_type'],
-			'post_status'         => 'publish',
-			'posts_per_page'      => eghtesadran_normalize_posts_count( $instance['posts_count'], 5 ),
-			'no_found_rows'       => true,
-			'offset'              => $instance['offset'],
-			'ignore_sticky_posts' => true,
-		);
+		$posts_count = eghtesadran_normalize_posts_count( $instance['posts_count'], 5 );
+		$wants_exclude = ( '1' === $instance['exclude_current'] && is_singular() );
 
-		// Order
-		if ( 'rand' === $instance['order'] ) {
-			$query_args['orderby'] = 'rand';
-		} else {
-			$query_args['order'] = $instance['order'];
-			if ( 'popular' === $instance['query_type'] ) {
-				$query_args['orderby'] = 'comment_count';
+		// --- Transient cache (key does NOT include current post ID) ---
+		$cache_key = eghtesadran_widget_cache_key( 'esr_wup', array(
+			'pt'  => $instance['post_type'],
+			'qt'  => $instance['query_type'],
+			'cat' => $instance['category'],
+			'ord' => $instance['order'],
+			'cnt' => $posts_count,
+			'off' => $instance['offset'],
+		) );
+
+		$cached_ids = get_transient( $cache_key );
+
+		if ( false === $cached_ids ) {
+			// Fetch one extra when exclude_current is on (so cache stays reusable).
+			$fetch_count = $wants_exclude ? $posts_count + 1 : $posts_count;
+
+			$query_args = array(
+				'post_type'              => $instance['post_type'],
+				'post_status'            => 'publish',
+				'posts_per_page'         => $fetch_count,
+				'no_found_rows'          => true,
+				'offset'                 => $instance['offset'],
+				'ignore_sticky_posts'    => true,
+				'fields'                 => 'ids',
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			);
+
+			// Order
+			if ( 'rand' === $instance['order'] ) {
+				$query_args['orderby'] = 'rand';
 			} else {
-				$query_args['orderby'] = 'date';
+				$query_args['order'] = $instance['order'];
+				if ( 'popular' === $instance['query_type'] ) {
+					$query_args['orderby'] = 'comment_count';
+				} else {
+					$query_args['orderby'] = 'date';
+				}
 			}
+
+			// Category
+			if ( 'category' === $instance['query_type'] && ! empty( $instance['category'] ) ) {
+				$query_args['cat'] = $instance['category'];
+			}
+
+			$id_query   = new WP_Query( $query_args );
+			$cached_ids = $id_query->posts; // array of ints
+			set_transient( $cache_key, $cached_ids, 5 * MINUTE_IN_SECONDS );
 		}
 
-		// Category
-		if ( 'category' === $instance['query_type'] && ! empty( $instance['category'] ) ) {
-			$query_args['cat'] = $instance['category'];
+		// Exclude current post in PHP (not in the query).
+		if ( $wants_exclude ) {
+			$current_id = get_queried_object_id();
+			$cached_ids = array_values( array_diff( $cached_ids, array( $current_id ) ) );
 		}
 
-		// Exclude current
-		if ( '1' === $instance['exclude_current'] && is_singular() ) {
-			$query_args['post__not_in'] = array( get_queried_object_id() );
+		// Trim to requested count.
+		$cached_ids = array_slice( $cached_ids, 0, $posts_count );
+
+		if ( empty( $cached_ids ) ) {
+			return;
 		}
 
-		$query = new WP_Query( $query_args );
+		// Prime caches in a single batch query.
+		_prime_post_caches( $cached_ids, true, true );
+
+		$query = new WP_Query( array(
+			'post__in'            => $cached_ids,
+			'orderby'             => 'post__in',
+			'posts_per_page'      => $posts_count,
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+			'post_status'         => 'publish',
+		) );
 
 		if ( ! $query->have_posts() ) {
 			return;
@@ -1227,34 +1271,69 @@ class Eghtesadran_Widget_Multi_Purpose_Posts extends Eghtesadran_Widget_Base {
 			'more_url'       => '',
 		) );
 
-		// Query args
-		$query_args = array(
-			'post_type'           => 'post',
-			'post_status'         => 'publish',
-			'posts_per_page'      => eghtesadran_normalize_posts_count( $instance['posts_count'], 3 ),
-			'no_found_rows'       => true,
-			'offset'              => $instance['offset'],
-			'ignore_sticky_posts' => true,
-		);
+		$posts_count = eghtesadran_normalize_posts_count( $instance['posts_count'], 3 );
 
-		// Order
-		if ( 'rand' === $instance['order'] ) {
-			$query_args['orderby'] = 'rand';
-		} else {
-			$query_args['order'] = $instance['order'];
-			if ( 'popular' === $instance['query_type'] ) {
-				$query_args['orderby'] = 'comment_count';
+		// --- Transient cache ---
+		$cache_key = eghtesadran_widget_cache_key( 'esr_wmp', array(
+			'qt'  => $instance['query_type'],
+			'cat' => $instance['category'],
+			'ord' => $instance['order'],
+			'cnt' => $posts_count,
+			'off' => $instance['offset'],
+		) );
+
+		$cached_ids = get_transient( $cache_key );
+
+		if ( false === $cached_ids ) {
+			$query_args = array(
+				'post_type'              => 'post',
+				'post_status'            => 'publish',
+				'posts_per_page'         => $posts_count,
+				'no_found_rows'          => true,
+				'offset'                 => $instance['offset'],
+				'ignore_sticky_posts'    => true,
+				'fields'                 => 'ids',
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			);
+
+			// Order
+			if ( 'rand' === $instance['order'] ) {
+				$query_args['orderby'] = 'rand';
 			} else {
-				$query_args['orderby'] = 'date';
+				$query_args['order'] = $instance['order'];
+				if ( 'popular' === $instance['query_type'] ) {
+					$query_args['orderby'] = 'comment_count';
+				} else {
+					$query_args['orderby'] = 'date';
+				}
 			}
+
+			// Category
+			if ( 'category' === $instance['query_type'] && ! empty( $instance['category'] ) ) {
+				$query_args['cat'] = $instance['category'];
+			}
+
+			$id_query   = new WP_Query( $query_args );
+			$cached_ids = $id_query->posts;
+			set_transient( $cache_key, $cached_ids, 5 * MINUTE_IN_SECONDS );
 		}
 
-		// Category
-		if ( 'category' === $instance['query_type'] && ! empty( $instance['category'] ) ) {
-			$query_args['cat'] = $instance['category'];
+		if ( empty( $cached_ids ) ) {
+			return;
 		}
 
-		$query = new WP_Query( $query_args );
+		// Prime caches in a single batch query.
+		_prime_post_caches( $cached_ids, true, true );
+
+		$query = new WP_Query( array(
+			'post__in'            => $cached_ids,
+			'orderby'             => 'post__in',
+			'posts_per_page'      => $posts_count,
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+			'post_status'         => 'publish',
+		) );
 
 		if ( ! $query->have_posts() ) {
 			return;
@@ -1522,19 +1601,50 @@ class Eghtesadran_Widget_Note extends Eghtesadran_Widget_Base {
 			)
 		);
 
-		$query_args = array(
-			'post_type'      => 'post',
-			'posts_per_page' => eghtesadran_normalize_posts_count( $instance['posts_count'], 3 ),
-			'no_found_rows'  => true,
-			'meta_query'     => array(
-				array(
-					'key'   => '_news_content_type',
-					'value' => 'note',
-				),
-			),
-		);
+		$posts_count = eghtesadran_normalize_posts_count( $instance['posts_count'], 3 );
 
-		$notes_query = new WP_Query( $query_args );
+		// --- Transient cache ---
+		$cache_key  = eghtesadran_widget_cache_key( 'esr_wnt', array(
+			'cnt' => $posts_count,
+			'ct'  => 'note',
+		) );
+		$cached_ids = get_transient( $cache_key );
+
+		if ( false === $cached_ids ) {
+			$query_args = array(
+				'post_type'              => 'post',
+				'posts_per_page'         => $posts_count,
+				'no_found_rows'          => true,
+				'fields'                 => 'ids',
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'meta_query'             => array(
+					array(
+						'key'   => '_news_content_type',
+						'value' => 'note',
+					),
+				),
+			);
+
+			$id_query   = new WP_Query( $query_args );
+			$cached_ids = $id_query->posts;
+			set_transient( $cache_key, $cached_ids, 5 * MINUTE_IN_SECONDS );
+		}
+
+		if ( empty( $cached_ids ) ) {
+			return;
+		}
+
+		_prime_post_caches( $cached_ids, true, true );
+
+		$notes_query = new WP_Query( array(
+			'post__in'            => $cached_ids,
+			'orderby'             => 'post__in',
+			'posts_per_page'      => $posts_count,
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+			'post_status'         => 'publish',
+		) );
 
 		if ( ! $notes_query->have_posts() ) {
 			return;
@@ -1670,19 +1780,50 @@ class Eghtesadran_Widget_Interview extends Eghtesadran_Widget_Base {
 			)
 		);
 
-		$query_args = array(
-			'post_type'      => 'post',
-			'posts_per_page' => eghtesadran_normalize_posts_count( $instance['posts_count'], 3 ),
-			'no_found_rows'  => true,
-			'meta_query'     => array(
-				array(
-					'key'   => '_news_content_type',
-					'value' => 'interview',
-				),
-			),
-		);
+		$posts_count = eghtesadran_normalize_posts_count( $instance['posts_count'], 3 );
 
-		$interviews_query = new WP_Query( $query_args );
+		// --- Transient cache ---
+		$cache_key  = eghtesadran_widget_cache_key( 'esr_wiv', array(
+			'cnt' => $posts_count,
+			'ct'  => 'interview',
+		) );
+		$cached_ids = get_transient( $cache_key );
+
+		if ( false === $cached_ids ) {
+			$query_args = array(
+				'post_type'              => 'post',
+				'posts_per_page'         => $posts_count,
+				'no_found_rows'          => true,
+				'fields'                 => 'ids',
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'meta_query'             => array(
+					array(
+						'key'   => '_news_content_type',
+						'value' => 'interview',
+					),
+				),
+			);
+
+			$id_query   = new WP_Query( $query_args );
+			$cached_ids = $id_query->posts;
+			set_transient( $cache_key, $cached_ids, 5 * MINUTE_IN_SECONDS );
+		}
+
+		if ( empty( $cached_ids ) ) {
+			return;
+		}
+
+		_prime_post_caches( $cached_ids, true, true );
+
+		$interviews_query = new WP_Query( array(
+			'post__in'            => $cached_ids,
+			'orderby'             => 'post__in',
+			'posts_per_page'      => $posts_count,
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+			'post_status'         => 'publish',
+		) );
 
 		if ( ! $interviews_query->have_posts() ) {
 			return;
