@@ -52,8 +52,13 @@
         <?php else : ?>
             <div class="py-12 text-center text-slate-500 dark:text-slate-400">
                 <i data-lucide="search-x" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
-                <?php if ( mb_strlen( trim( (string) get_search_query() ) ) < 3 ) : ?>
+                <?php
+                $sq_len = mb_strlen( trim( (string) get_search_query() ) );
+                if ( $sq_len < 3 ) :
+                ?>
                     <p class="text-lg mb-4"><?php esc_html_e( 'عبارت جستجو باید حداقل ۳ نویسه باشد.', 'eghtesadran' ); ?></p>
+                <?php elseif ( $sq_len > 50 ) : ?>
+                    <p class="text-lg mb-4"><?php esc_html_e( 'عبارت جستجو نباید بیش از ۵۰ نویسه باشد.', 'eghtesadran' ); ?></p>
                 <?php else : ?>
                     <p class="text-lg mb-4"><?php esc_html_e( 'متاسفانه نتیجه‌ای برای جستجوی شما یافت نشد.', 'eghtesadran' ); ?></p>
                 <?php endif; ?>
