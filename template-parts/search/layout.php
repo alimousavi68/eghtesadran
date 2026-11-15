@@ -52,7 +52,11 @@
         <?php else : ?>
             <div class="py-12 text-center text-slate-500 dark:text-slate-400">
                 <i data-lucide="search-x" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
-                <p class="text-lg mb-4">متاسفانه نتیجه‌ای برای جستجوی شما یافت نشد.</p>
+                <?php if ( mb_strlen( trim( (string) get_search_query() ) ) < 3 ) : ?>
+                    <p class="text-lg mb-4"><?php esc_html_e( 'عبارت جستجو باید حداقل ۳ نویسه باشد.', 'eghtesadran' ); ?></p>
+                <?php else : ?>
+                    <p class="text-lg mb-4"><?php esc_html_e( 'متاسفانه نتیجه‌ای برای جستجوی شما یافت نشد.', 'eghtesadran' ); ?></p>
+                <?php endif; ?>
                 <?php get_search_form(); ?>
             </div>
         <?php endif; ?>

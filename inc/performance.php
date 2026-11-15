@@ -84,3 +84,24 @@ function eghtesadran_widget_cache_key( $prefix, $parts ) {
 	$hash       = substr( md5( wp_json_encode( $parts ) ), 0, 12 );
 	return $prefix . '_' . $hash;
 }
+
+/**
+ * Safeguards search queries against database table-scan overload.
+ *
+ * For empty or < 3 character search terms, forces an empty result set
+ * and disables found_rows calculation, preventing massive LIKE queries
+ * across the wp_posts table.
+ *
+ * @param WP_Query $query The current WP_Query instance.
+ * @return void
+ */
+function eghtesadran_safeguard_search_query( $query ) {
+	if ( ! is_admin() && $query->is_main_query() && $query->is_search() ) {
+		$search = trim( (string) $query->get( 's' ) );
+		if ( mb_strlen( $search ) < 3 ) {
+			$query->set( 'post__in', array( 0 ) );
+			$query->set( 'no_found_rows', true );
+		}
+	}
+}
+add_action( 'pre_get_posts', 'eghtesadran_safeguard_search_query' );

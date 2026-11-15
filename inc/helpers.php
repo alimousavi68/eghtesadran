@@ -509,11 +509,21 @@ function eghtesadran_get_flat_menu_items( $location ) {
 /**
  * Returns recent posts for the header ticker.
  *
+ * Results are cached in a 5-minute transient incorporating esr_cache_ver.
+ *
  * @param int $limit Number of items to return.
  * @return array<int, array<string, string>>
  */
 function eghtesadran_get_ticker_items( $limit = 5 ) {
 	$limit = max( 1, (int) $limit );
+
+	$cache_key = 'esr_ticker_' . eghtesadran_get_cache_ver() . '_' . $limit;
+	$cached    = get_transient( $cache_key );
+
+	if ( false !== $cached && is_array( $cached ) ) {
+		return $cached;
+	}
+
 	$items = array();
 
 	$posts = get_posts(
@@ -521,7 +531,8 @@ function eghtesadran_get_ticker_items( $limit = 5 ) {
 			'post_type'           => 'post',
 			'post_status'         => 'publish',
 			'posts_per_page'      => $limit,
-			'ignore_sticky_posts' => false,
+			'ignore_sticky_posts' => true,
+			'no_found_rows'       => true,
 			'orderby'             => 'date',
 			'order'               => 'DESC',
 		)
@@ -534,31 +545,33 @@ function eghtesadran_get_ticker_items( $limit = 5 ) {
 		);
 	}
 
-	if ( ! empty( $items ) ) {
-		return $items;
+	if ( empty( $items ) ) {
+		foreach ( get_pages( array( 'sort_column' => 'menu_order,post_title', 'number' => $limit ) ) as $page ) {
+			$items[] = array(
+				'label' => $page->post_title,
+				'url'   => get_permalink( $page ),
+			);
+		}
 	}
 
-	foreach ( get_pages( array( 'sort_column' => 'menu_order,post_title', 'number' => $limit ) ) as $page ) {
-		$items[] = array(
-			'label' => $page->post_title,
-			'url'   => get_permalink( $page ),
+	if ( empty( $items ) ) {
+		$items = array(
+			array(
+				'label' => __( 'آخرین به‌روزرسانی‌های سایت به‌زودی از این بخش نمایش داده می‌شوند.', 'eghtesadran' ),
+				'url'   => home_url( '/' ),
+			),
 		);
 	}
 
-	if ( ! empty( $items ) ) {
-		return $items;
-	}
+	set_transient( $cache_key, $items, 5 * MINUTE_IN_SECONDS );
 
-	return array(
-		array(
-			'label' => __( 'آخرین به‌روزرسانی‌های سایت به‌زودی از این بخش نمایش داده می‌شوند.', 'eghtesadran' ),
-			'url'   => home_url( '/' ),
-		),
-	);
+	return $items;
 }
 
 /**
  * Helper to render a category section based on a specific layout.
+ *
+ * Results are cached using a 5-minute transient with esr_cache_ver.
  *
  * @param string $category_slug Category slug.
  * @param string $layout        Layout type (A, B, C).
@@ -572,11 +585,40 @@ function eghtesadran_render_category_section( $category_slug, $layout = 'A' ) {
 
 	$posts_per_page = ( 'C' === $layout ) ? 4 : 3;
 
+	$cache_key  = 'esr_cat_' . $category->term_id . '_' . $layout . '_v' . eghtesadran_get_cache_ver();
+	$cached_ids = get_transient( $cache_key );
+
+	if ( false === $cached_ids ) {
+		$id_query = new WP_Query(
+			array(
+				'cat'                    => $category->term_id,
+				'posts_per_page'         => $posts_per_page,
+				'no_found_rows'          => true,
+				'fields'                 => 'ids',
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'ignore_sticky_posts'    => true,
+				'post_status'            => 'publish',
+			)
+		);
+		$cached_ids = $id_query->posts;
+		set_transient( $cache_key, $cached_ids, 5 * MINUTE_IN_SECONDS );
+	}
+
+	if ( empty( $cached_ids ) ) {
+		return;
+	}
+
+	_prime_post_caches( $cached_ids, true, true );
+
 	$query = new WP_Query(
 		array(
-			'category_name'  => $category_slug,
-			'posts_per_page' => $posts_per_page,
-			'no_found_rows'  => true,
+			'post__in'            => $cached_ids,
+			'orderby'             => 'post__in',
+			'posts_per_page'      => $posts_per_page,
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+			'post_status'         => 'publish',
 		)
 	);
 

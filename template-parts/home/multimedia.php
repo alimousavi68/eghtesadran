@@ -11,20 +11,49 @@ $posts_per_page = eghtesadran_normalize_posts_count( get_theme_mod( 'eghtesadran
 $orderby        = get_theme_mod( 'eghtesadran_multimedia_orderby', 'date' );
 $order          = get_theme_mod( 'eghtesadran_multimedia_order', 'DESC' );
 
+$mm_cache_key  = 'esr_mm_' . $posts_per_page . '_' . $orderby . '_' . $order . '_v' . eghtesadran_get_cache_ver();
+$mm_cached_ids = get_transient( $mm_cache_key );
+
+if ( false === $mm_cached_ids ) {
+	$id_query = new WP_Query(
+		array(
+			'post_type'              => 'post',
+			'post_status'            => 'publish',
+			'posts_per_page'         => $posts_per_page,
+			'no_found_rows'          => true,
+			'orderby'                => $orderby,
+			'order'                  => $order,
+			'fields'                 => 'ids',
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'ignore_sticky_posts'    => true,
+			'meta_query'             => array(
+				array(
+					'key'     => '_news_content_type',
+					'value'   => array( 'video', 'audio', 'photo_report' ),
+					'compare' => 'IN',
+				),
+			),
+		)
+	);
+	$mm_cached_ids = $id_query->posts;
+	set_transient( $mm_cache_key, $mm_cached_ids, 5 * MINUTE_IN_SECONDS );
+}
+
+if ( empty( $mm_cached_ids ) ) {
+	return;
+}
+
+_prime_post_caches( $mm_cached_ids, true, true );
+
 $multimedia_query = new WP_Query(
 	array(
-		'post_type'      => 'post',
-		'posts_per_page' => $posts_per_page,
-		'no_found_rows'  => true,
-		'orderby'        => $orderby,
-		'order'          => $order,
-		'meta_query'     => array(
-			array(
-				'key'     => '_news_content_type',
-				'value'   => array( 'video', 'audio', 'photo_report' ),
-				'compare' => 'IN',
-			),
-		),
+		'post__in'            => $mm_cached_ids,
+		'orderby'             => 'post__in',
+		'posts_per_page'      => $posts_per_page,
+		'no_found_rows'       => true,
+		'ignore_sticky_posts' => true,
+		'post_status'         => 'publish',
 	)
 );
 

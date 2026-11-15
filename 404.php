@@ -37,29 +37,64 @@ get_header(); ?>
 
 		<!-- Trending News Section -->
 		<?php
-		$trending_query = new WP_Query(
-			array(
-				'post_type'      => 'post',
-				'posts_per_page' => 3,
-				'no_found_rows'  => true,
-				'meta_query'     => array(
-					array(
-						'key'     => '_eghtesadran_badge',
-						'value'   => 'trending',
-						'compare' => '=',
-					),
-				),
-			)
-		);
+		$cache_key  = 'esr_404_trend_v' . eghtesadran_get_cache_ver();
+		$cached_ids = get_transient( $cache_key );
 
-		if ( ! $trending_query->have_posts() ) {
-			$trending_query = new WP_Query(
+		if ( false === $cached_ids ) {
+			$id_query = new WP_Query(
 				array(
-					'post_type'      => 'post',
-					'posts_per_page' => 3,
-					'no_found_rows'  => true,
+					'post_type'              => 'post',
+					'post_status'            => 'publish',
+					'posts_per_page'         => 3,
+					'no_found_rows'          => true,
+					'fields'                 => 'ids',
+					'update_post_meta_cache' => false,
+					'update_post_term_cache' => false,
+					'ignore_sticky_posts'    => true,
+					'meta_query'             => array(
+						array(
+							'key'     => '_eghtesadran_badge',
+							'value'   => 'trending',
+							'compare' => '=',
+						),
+					),
 				)
 			);
+			$cached_ids = $id_query->posts;
+
+			if ( empty( $cached_ids ) ) {
+				$fallback_query = new WP_Query(
+					array(
+						'post_type'              => 'post',
+						'post_status'            => 'publish',
+						'posts_per_page'         => 3,
+						'no_found_rows'          => true,
+						'fields'                 => 'ids',
+						'update_post_meta_cache' => false,
+						'update_post_term_cache' => false,
+						'ignore_sticky_posts'    => true,
+					)
+				);
+				$cached_ids = $fallback_query->posts;
+			}
+
+			set_transient( $cache_key, $cached_ids, 15 * MINUTE_IN_SECONDS );
+		}
+
+		if ( ! empty( $cached_ids ) ) {
+			_prime_post_caches( $cached_ids, true, true );
+			$trending_query = new WP_Query(
+				array(
+					'post__in'            => $cached_ids,
+					'orderby'             => 'post__in',
+					'posts_per_page'      => 3,
+					'no_found_rows'       => true,
+					'ignore_sticky_posts' => true,
+					'post_status'         => 'publish',
+				)
+			);
+		} else {
+			$trending_query = new WP_Query();
 		}
 
 		if ( $trending_query->have_posts() ) :

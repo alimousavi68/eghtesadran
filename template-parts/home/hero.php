@@ -21,45 +21,89 @@ $show_cat_tag     = get_theme_mod( 'eghtesadran_hero_show_cat_tag', '1' ) === '1
 $left_title       = get_theme_mod( 'eghtesadran_hero_left_title', __( 'مهم ترین اخبار', 'eghtesadran' ) );
 $left_icon        = get_theme_mod( 'eghtesadran_hero_left_icon', 'trending-up' );
 
-// Main Hero Query (1 post) - Fetch the latest post
-$main_args = array(
-	'post_type'      => 'post',
-	'posts_per_page' => 1,
-	'no_found_rows'  => true,
-	'orderby'        => 'date',
-	'order'          => 'DESC',
-);
-if ( $right_cat > 0 ) {
-	$main_args['cat'] = $right_cat;
-}
-if ( $right_offset > 0 ) {
-	$main_args['offset'] = $right_offset;
+// Main Hero Query (1 post) - Cached with transient
+$main_cache_key = 'esr_hero_m_' . $right_cat . '_' . $right_offset . '_v' . eghtesadran_get_cache_ver();
+$main_cached_id = get_transient( $main_cache_key );
+
+if ( false === $main_cached_id ) {
+	$main_args = array(
+		'post_type'              => 'post',
+		'post_status'            => 'publish',
+		'posts_per_page'         => 1,
+		'no_found_rows'          => true,
+		'orderby'                => 'date',
+		'order'                  => 'DESC',
+		'fields'                 => 'ids',
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'ignore_sticky_posts'    => true,
+	);
+	if ( $right_cat > 0 ) {
+		$main_args['cat'] = $right_cat;
+	}
+	if ( $right_offset > 0 ) {
+		$main_args['offset'] = $right_offset;
+	}
+
+	$main_id_query  = new WP_Query( $main_args );
+	$main_cached_id = ! empty( $main_id_query->posts ) ? (int) $main_id_query->posts[0] : 0;
+	set_transient( $main_cache_key, $main_cached_id, 5 * MINUTE_IN_SECONDS );
 }
 
-$hero_main_query = new WP_Query( $main_args );
+$hero_main_query = ( $main_cached_id > 0 ) ? new WP_Query( array(
+	'p'                   => $main_cached_id,
+	'post_type'           => 'post',
+	'no_found_rows'       => true,
+	'ignore_sticky_posts' => true,
+	'post_status'         => 'publish',
+) ) : new WP_Query();
 
-// Side News Query (excluding the main one)
-$exclude_id = 0;
-if ( $hero_main_query->have_posts() ) {
-	$exclude_id = $hero_main_query->posts[0]->ID;
+// Side News Query - Fetch +1 and exclude main in PHP
+$side_cache_key = 'esr_hero_s_' . $left_cat . '_' . $left_offset . '_' . $left_count . '_v' . eghtesadran_get_cache_ver();
+$side_cached_ids = get_transient( $side_cache_key );
+
+if ( false === $side_cached_ids ) {
+	$side_args = array(
+		'post_type'              => 'post',
+		'post_status'            => 'publish',
+		'posts_per_page'         => $left_count + 1,
+		'no_found_rows'          => true,
+		'orderby'                => 'date',
+		'order'                  => 'DESC',
+		'fields'                 => 'ids',
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'ignore_sticky_posts'    => true,
+	);
+	if ( $left_cat > 0 ) {
+		$side_args['cat'] = $left_cat;
+	}
+	if ( $left_offset > 0 ) {
+		$side_args['offset'] = $left_offset;
+	}
+
+	$side_id_query   = new WP_Query( $side_args );
+	$side_cached_ids = $side_id_query->posts;
+	set_transient( $side_cache_key, $side_cached_ids, 5 * MINUTE_IN_SECONDS );
 }
 
-$side_args = array(
-	'post_type'      => 'post',
-	'posts_per_page' => $left_count,
-	'no_found_rows'  => true,
-	'post__not_in'   => array( $exclude_id ),
-	'orderby'        => 'date',
-	'order'          => 'DESC',
-);
-if ( $left_cat > 0 ) {
-	$side_args['cat'] = $left_cat;
-}
-if ( $left_offset > 0 ) {
-	$side_args['offset'] = $left_offset;
-}
+// Exclude the main hero post in PHP if present, then trim to count
+$filtered_side_ids = array_values( array_diff( (array) $side_cached_ids, array( $main_cached_id ) ) );
+$filtered_side_ids = array_slice( $filtered_side_ids, 0, $left_count );
 
-$hero_side_query = new WP_Query( $side_args );
+if ( ! empty( $filtered_side_ids ) ) {
+	_prime_post_caches( $filtered_side_ids, true, true );
+	$hero_side_query = new WP_Query( array(
+		'post__in'            => $filtered_side_ids,
+		'orderby'             => 'post__in',
+		'posts_per_page'      => $left_count,
+		'no_found_rows'       => true,
+		'ignore_sticky_posts' => true,
+		'post_status'         => 'publish',
+	) );
+} else {
+	$hero_side_query = new WP_Query();
+}
 ?>
 
 <!-- 2. HERO SECTION -->
