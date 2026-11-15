@@ -28,9 +28,9 @@ function eghtesadran_normalize_posts_count( $value, $default ) {
 /**
  * Builds the unpaginated related list using WordPress's post-term cache.
  *
- * get_the_terms() reuses relationships primed by the main query and category
- * display. Core invalidates that cache when terms change; no TTL is needed.
- * An empty WP_Query avoids a posts-table query when no relation can match.
+ * Results are cached in a 6-hour transient keyed by post ID, query type,
+ * and count.  When the customizer toggle is off this function is never
+ * called (short-circuited in content-single.php).
  *
  * @param int    $post_id    Current post ID.
  * @param int    $count      Number of related posts.
@@ -38,12 +38,39 @@ function eghtesadran_normalize_posts_count( $value, $default ) {
  * @return WP_Query
  */
 function eghtesadran_get_related_posts_query( $post_id, $count, $query_type ) {
+	$count = eghtesadran_normalize_posts_count( $count, 2 );
+
+	// --- Try transient first ---
+	$cache_key = 'esr_related_' . (int) $post_id . '_' . $query_type . '_' . $count;
+	$cached    = get_transient( $cache_key );
+
+	if ( false !== $cached ) {
+		// $cached is an array of IDs (may be empty).
+		if ( empty( $cached ) ) {
+			return new WP_Query();
+		}
+		return new WP_Query(
+			array(
+				'post__in'            => $cached,
+				'orderby'             => 'post__in',
+				'posts_per_page'      => $count,
+				'no_found_rows'       => true,
+				'ignore_sticky_posts' => true,
+				'post_status'         => 'publish',
+			)
+		);
+	}
+
+	// --- Build a lightweight ID-only query ---
 	$args = array(
-		'post__not_in'        => array( (int) $post_id ),
-		'posts_per_page'      => eghtesadran_normalize_posts_count( $count, 2 ),
-		'no_found_rows'       => true,
-		'post_status'         => 'publish',
-		'ignore_sticky_posts' => 1,
+		'post__not_in'            => array( (int) $post_id ),
+		'posts_per_page'          => $count,
+		'no_found_rows'           => true,
+		'post_status'             => 'publish',
+		'ignore_sticky_posts'     => 1,
+		'fields'                  => 'ids',
+		'update_post_meta_cache'  => false,
+		'update_post_term_cache'  => false,
 	);
 
 	$taxonomies = array( 'category' );
@@ -57,11 +84,35 @@ function eghtesadran_get_related_posts_query( $post_id, $count, $query_type ) {
 	foreach ( $taxonomies as $taxonomy ) {
 		$terms = get_the_terms( $post_id, $taxonomy );
 		if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-			$term_ids[ $taxonomy ] = array_map( 'intval', wp_list_pluck( $terms, 'term_id' ) );
+			$ids_for_tax = array_map( 'intval', wp_list_pluck( $terms, 'term_id' ) );
+
+			// For categories: use primary category first, exclude oversized ones.
+			if ( 'category' === $taxonomy ) {
+				$excluded = apply_filters(
+					'eghtesadran_related_excluded_categories',
+					EGHTESADRAN_RELATED_EXCLUDED_CATEGORIES
+				);
+				$filtered = array_diff( $ids_for_tax, $excluded );
+
+				if ( empty( $filtered ) ) {
+					// All categories were excluded – try primary category.
+					$primary = eghtesadran_get_primary_category( $post_id );
+					if ( $primary ) {
+						$filtered = array( (int) $primary->term_id );
+					} else {
+						$filtered = $ids_for_tax; // fallback to originals
+					}
+				}
+
+				$ids_for_tax = array_values( $filtered );
+			}
+
+			$term_ids[ $taxonomy ] = $ids_for_tax;
 		}
 	}
 
 	if ( empty( $term_ids ) ) {
+		set_transient( $cache_key, array(), 6 * HOUR_IN_SECONDS );
 		return new WP_Query();
 	}
 
@@ -80,7 +131,27 @@ function eghtesadran_get_related_posts_query( $post_id, $count, $query_type ) {
 		$args['category__in'] = $term_ids['category'];
 	}
 
-	return new WP_Query( $args );
+	$id_query   = new WP_Query( $args );
+	$result_ids = $id_query->posts; // array of ints
+
+	// Cache even if empty (prevents repeated heavy queries for posts with no matches).
+	set_transient( $cache_key, $result_ids, 6 * HOUR_IN_SECONDS );
+
+	if ( empty( $result_ids ) ) {
+		return new WP_Query();
+	}
+
+	// Full query with post objects for template rendering.
+	return new WP_Query(
+		array(
+			'post__in'            => $result_ids,
+			'orderby'             => 'post__in',
+			'posts_per_page'      => $count,
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+			'post_status'         => 'publish',
+		)
+	);
 }
 
 /**
@@ -918,27 +989,39 @@ if ( class_exists( 'Walker_Nav_Menu' ) ) {
 /**
  * Returns the primary category term for a post (with fallback to default).
  *
+ * Uses a static in-memory cache so repeated calls for the same post
+ * within a single request don't hit get_post_meta / get_term again.
+ *
  * @param int|WP_Post|null $post Post ID or WP_Post object. Default is current post.
  * @return WP_Term|null Category term object or null.
  */
 function eghtesadran_get_primary_category( $post = null ) {
+	static $cache = array();
+
 	$post = get_post( $post );
 	if ( ! $post ) {
 		return null;
+	}
+
+	if ( isset( $cache[ $post->ID ] ) ) {
+		return $cache[ $post->ID ];
 	}
 
 	$primary_cat_id = get_post_meta( $post->ID, '_news_primary_category', true );
 	if ( ! empty( $primary_cat_id ) ) {
 		$term = get_term( $primary_cat_id, 'category' );
 		if ( $term && ! is_wp_error( $term ) ) {
+			$cache[ $post->ID ] = $term;
 			return $term;
 		}
 	}
 
 	$categories = get_the_category( $post->ID );
 	if ( ! empty( $categories ) && ! is_wp_error( $categories ) ) {
+		$cache[ $post->ID ] = $categories[0];
 		return $categories[0];
 	}
 
+	$cache[ $post->ID ] = null;
 	return null;
 }

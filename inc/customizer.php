@@ -207,6 +207,23 @@ function eghtesadran_customize_register( $wp_customize ) {
 
 	// Related Posts Settings (Single Post)
 	$wp_customize->add_setting(
+		'eghtesadran_related_posts_enabled',
+		array(
+			'default'           => false,
+			'sanitize_callback' => 'wp_validate_boolean',
+		)
+	);
+
+	$wp_customize->add_control(
+		'eghtesadran_related_posts_enabled',
+		array(
+			'label'   => __( 'نمایش مطالب مرتبط (ممکن است سنگین باشد)', 'eghtesadran' ),
+			'section' => 'eghtesadran_theme_options',
+			'type'    => 'checkbox',
+		)
+	);
+
+	$wp_customize->add_setting(
 		'eghtesadran_related_posts_count',
 		array(
 			'default'           => 2,

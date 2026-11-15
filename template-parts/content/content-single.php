@@ -421,6 +421,7 @@
 
 
 			<!-- Related Posts -->
+			<?php if ( get_theme_mod( 'eghtesadran_related_posts_enabled', false ) ) : ?>
 			<?php
 			$related_count      = eghtesadran_normalize_posts_count( get_theme_mod( 'eghtesadran_related_posts_count', 2 ), 2 );
 			$related_query_type = get_theme_mod( 'eghtesadran_related_posts_query_type', 'category' );
@@ -457,6 +458,7 @@
 						<?php endwhile; wp_reset_postdata(); ?>
 					</div>
 				</div>
+			<?php endif; ?>
 			<?php endif; ?>
 		</article>
 
